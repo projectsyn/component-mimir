@@ -1,0 +1,5 @@
+= mimir
+
+mimir is a Commodore component to manage mimir.
+
+See the xref:references/parameters.adoc[parameters] reference for further details.
