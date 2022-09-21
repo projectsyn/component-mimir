@@ -1,5 +1,13 @@
 parameters:
   kapitan:
+
+    dependencies:
+      - type: helm
+        source: https://grafana.github.io/helm-charts
+        chart_name: mimir-distributed
+        version: ${mimir:charts:mimir-distributed}
+        output_path: dependencies/mimir/helmcharts/mimir-distributed/v${mimir:charts:mimir-distributed}
+
     compile:
       - input_paths:
           - ${_base_directory}/component/app.jsonnet
@@ -8,4 +16,14 @@ parameters:
       - input_paths:
           - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
-        output_path: mimir/
+        output_path: ${_instance}/
+
+      - input_type: helm
+        output_type: yaml
+        input_paths:
+          - dependencies/mimir/helmcharts/mimir-distributed/v${mimir:charts:mimir-distributed}
+        output_path: ${_instance}/10_mimir_distributed
+        helm_values: ${mimir:helm_values}
+        helm_params:
+          name: ${mimir:name}
+          namespace: ${mimir:namespace:name}

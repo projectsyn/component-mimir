@@ -1,4 +1,133 @@
 parameters:
   mimir:
-    =_metadata: {}
-    namespace: syn-mimir
+    =_metadata:
+      multi_instance: true
+
+    name: ${_instance}
+    namespace:
+      name: syn-mimir
+      create: true
+      metadata: {}
+
+    secrets:
+      mimir-bucket-secret:
+        stringData:
+          S3_ACCESS_KEY_ID: null
+          S3_SECRET_ACCESS_KEY: null
+          S3_ENDPOINT: null
+
+    charts:
+      mimir-distributed: "3.0.0"
+
+    helm_values:
+      global:
+        extraEnvFrom:
+          - secretRef:
+              name: mimir-bucket-secret
+        podAnnotations:
+          # increase if bucket secrets change
+          bucketSecretVersion: "0"
+
+      mimir:
+        structuredConfig:
+          alertmanager_storage:
+            s3:
+              bucket_name: ${mimir:name}-alertmanager-bucket
+              access_key_id: \${S3_ACCESS_KEY_ID}
+              endpoint: \${S3_ENDPOINT}
+              secret_access_key: \${S3_SECRET_ACCESS_KEY}
+          blocks_storage:
+            backend: s3
+            s3:
+              bucket_name: ${mimir:name}-blocks-bucket
+              access_key_id: \${S3_ACCESS_KEY_ID}
+              endpoint: \${S3_ENDPOINT}
+              secret_access_key: \${S3_SECRET_ACCESS_KEY}
+          ruler_storage:
+            s3:
+              bucket_name: ${mimir:name}-ruler-bucket
+              access_key_id: \${S3_ACCESS_KEY_ID}
+              endpoint: \${S3_ENDPOINT}
+              secret_access_key: \${S3_SECRET_ACCESS_KEY}
+
+      alertmanager:
+        persistentVolume:
+          enabled: true
+        replicas: 3
+        statefulSet:
+          enabled: true
+
+      compactor:
+        persistentVolume:
+          size: 50Gi
+
+      distributor:
+        replicas: 3
+
+      ingester:
+        persistentVolume:
+          size: 50Gi
+        replicas: 4
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: target
+                      operator: In
+                      values:
+                        - ingester
+                topologyKey: 'kubernetes.io/hostname'
+
+      chunks-cache:
+        enabled: true
+        replicas: 2
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 4Gi
+
+      index-cache:
+        enabled: true
+        replicas: 3
+        resources:
+          limits:
+            memory: 1500Mi
+          requests:
+            cpu: 500m
+            memory: 1500Mi
+
+      metadata-cache:
+        enabled: true
+
+      results-cache:
+        enabled: true
+
+      minio:
+        enabled: false
+
+      overrides_exporter:
+        replicas: 1
+
+      querier:
+        replicas: 2
+
+      query_frontend:
+        replicas: 1
+
+      ruler:
+        replicas: 2
+
+      store_gateway:
+        persistentVolume:
+          size: 20Gi
+        replicas: 1
+
+      # Grafana Enterprise Metrics feature related
+      admin_api:
+        replicas: 3
+
+      gateway:
+        replicas: 3
