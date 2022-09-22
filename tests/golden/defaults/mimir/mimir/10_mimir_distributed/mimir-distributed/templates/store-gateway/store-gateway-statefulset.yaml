@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.2.0
+    helm.sh/chart: mimir-distributed-3.0.0
+  name: mimir-store-gateway
+  namespace: syn-mimir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: store-gateway
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+  serviceName: mimir-store-gateway-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: a65fac97c71478d5409c613eb7acbb01d8d935072ad49df2a2682ca49d7a962a
+      labels:
+        app.kubernetes.io/component: store-gateway
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.2.0
+        helm.sh/chart: mimir-distributed-3.0.0
+      namespace: syn-mimir
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: target
+                    operator: In
+                    values:
+                      - store-gateway
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - args:
+            - -target=store-gateway
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+          env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: grafana/mimir:2.2.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: store-gateway
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+      initContainers: []
+      nodeSelector: {}
+      securityContext: {}
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 240
+      tolerations: []
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
+          name: config
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi

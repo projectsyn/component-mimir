@@ -3,8 +3,9 @@ local inv = kap.inventory();
 local params = inv.parameters.mimir;
 local argocd = import 'lib/argocd.libjsonnet';
 
-local app = argocd.App('mimir', params.namespace);
+
+local instance = inv.parameters._instance;
 
 {
-  mimir: app,
+  [instance]: argocd.App(instance, params.namespace.name),
 }

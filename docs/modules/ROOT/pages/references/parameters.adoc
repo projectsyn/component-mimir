@@ -2,7 +2,11 @@
 
 The parent key for all of the following parameters is `mimir`.
 
-== `namespace`
+The component allows multi instantiation.
+
+The underlying Helm chart can be found https://github.com/grafana/mimir/tree/main/operations/helm/charts/mimir-distributed[here].
+
+== `namespace.name`
 
 [horizontal]
 type:: string
@@ -11,9 +15,118 @@ default:: `syn-mimir`
 The namespace in which to deploy this component.
 
 
+== `namespace.create`
+
+[horizontal]
+type:: boolean
+default:: `true`
+
+Wether to create the namespace given by `namespace.name`.
+
+
+== `namespace.metadata`
+
+[horizontal]
+type:: dict
+default:: `{}`
+example:: `{"labels": {"organization": "bar"}}`
+
+Additional metadata to add to the namespace.
+
+
+== `secrets`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+mimir-bucket-secret:
+  stringData:
+    S3_ACCESS_KEY_ID: null
+    S3_SECRET_ACCESS_KEY: null
+    S3_ENDPOINT: null
+----
+
+A dict of secrets to create in the namespace. The key is the name of the secret, the value is the content of the secret.
+The value must be a dict with a key `stringData` which is a dict of key/value pairs to add to the secret.
+
+Holds the secrets for the S3 bucket by default.
+
+
+== `charts`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+mimir-distributed: "<CURRENT VERSION>"
+----
+
+Holds the reference to the used version of the charts.
+See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
+
+
+== `helm_values`
+
+[horizontal]
+type:: dict
+default:: see https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml]
+
+Holds the values for the helm chart.
+
+The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
+Replicas are taken from the `small.yaml` recommended production values.
+
+The read path, especially the `store-gateway` doesn't have HA enabled.
+There is no data loss, but there is a performance impact.
+
+See https://grafana.com/docs/mimir/latest/operators-guide/run-production-environment/planning-capacity/[Planning capacity], https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/small.yaml[small.yaml], and https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/large.yaml[large.yaml] for upstream sizing recommendations.
+
+https://grafana.com/docs/mimir/latest/operators-guide/architecture/components/[Components] describes what the components enabled by this Helm chart do.
+
+https://grafana.com/docs/mimir/latest/operators-guide/architecture/components/ingester/#ingesters-failure-and-data-loss[Ingester failure and data loss] describes the implications of a HA setup.
+
 == Example
 
 [source,yaml]
 ----
-namespace: example-namespace
+namespace:
+  name: example-mimir
+  create: true
+  metadata:
+    labels:
+      example.com/organization: example
+
+secrets:
+  mimir-nginx-htpasswd:
+    stringData:
+      .htpasswd: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/htpasswd}"
+  mimir-bucket-secret:
+    stringData:
+      S3_ACCESS_KEY_ID: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/s3_access_key}"
+      S3_SECRET_ACCESS_KEY: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/s3_secret_key}"
+      S3_ENDPOINT: objects.s3.example.com
+
+helm_values:
+  nginx:
+    basicAuth:
+      enabled: true
+      existingSecret: mimir-nginx-htpasswd
+    ingress:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+      enabled: true
+      hosts:
+        - host: mimir.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: example-mimir-tls
+          hosts:
+            - mimir.example.com
 ----
