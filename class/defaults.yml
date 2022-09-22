@@ -19,6 +19,9 @@ parameters:
     charts:
       mimir-distributed: "3.0.0"
 
+    # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
+    # Replicas are taken from the `small.yaml` recommended production values.
+    # See parameters.adoc for links to the upstream sizing guidelines.
     helm_values:
       global:
         extraEnvFrom:

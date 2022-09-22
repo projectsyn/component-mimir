@@ -78,10 +78,17 @@ default:: see https://github.com/projectsyn/component-mimir/blob/master/class/de
 
 Holds the values for the helm chart.
 
-The defaults are close to the upstream defaults, with HA enabled and the bucket secret added.
+The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
+Replicas are taken from the `small.yaml` recommended production values.
+
+The read path, especially the `store-gateway` doesn't have HA enabled.
+There is no data loss, but there is a performance impact.
 
 See https://grafana.com/docs/mimir/latest/operators-guide/run-production-environment/planning-capacity/[Planning capacity], https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/small.yaml[small.yaml], and https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/large.yaml[large.yaml] for upstream sizing recommendations.
 
+https://grafana.com/docs/mimir/latest/operators-guide/architecture/components/[Components] describes what the components enabled by this Helm chart do.
+
+https://grafana.com/docs/mimir/latest/operators-guide/architecture/components/ingester/#ingesters-failure-and-data-loss[Ingester failure and data loss] describes the implications of a HA setup.
 
 == Example
 
