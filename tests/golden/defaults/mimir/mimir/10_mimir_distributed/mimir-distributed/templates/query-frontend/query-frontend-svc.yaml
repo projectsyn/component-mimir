@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.4.0
+    helm.sh/chart: mimir-distributed-3.3.0
   name: mimir-query-frontend
   namespace: syn-mimir
 spec:

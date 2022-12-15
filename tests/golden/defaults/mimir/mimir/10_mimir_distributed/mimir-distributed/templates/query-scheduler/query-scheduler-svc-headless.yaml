@@ -3,15 +3,14 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/part-of: memberlist
     app.kubernetes.io/version: 2.4.0
     helm.sh/chart: mimir-distributed-3.3.0
     prometheus.io/service-monitor: 'false'
-  name: mimir-alertmanager-headless
+  name: mimir-query-scheduler-headless
   namespace: syn-mimir
 spec:
   clusterIP: None
@@ -24,12 +23,9 @@ spec:
       port: 9095
       protocol: TCP
       targetPort: grpc
-    - name: cluster
-      port: 9094
-      protocol: TCP
   publishNotReadyAddresses: true
   selector:
-    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/name: mimir
   type: ClusterIP

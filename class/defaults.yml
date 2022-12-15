@@ -17,7 +17,7 @@ parameters:
           S3_ENDPOINT: null
 
     charts:
-      mimir-distributed: "3.0.0"
+      mimir-distributed: "3.3.0"
 
     # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
     # Replicas are taken from the `small.yaml` recommended production values.

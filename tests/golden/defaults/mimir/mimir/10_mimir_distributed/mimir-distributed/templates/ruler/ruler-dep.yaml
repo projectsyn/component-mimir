@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.4.0
+    helm.sh/chart: mimir-distributed-3.3.0
   name: mimir-ruler
   namespace: syn-mimir
 spec:
@@ -28,15 +28,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: a65fac97c71478d5409c613eb7acbb01d8d935072ad49df2a2682ca49d7a962a
+        checksum/config: 2fbc90000cca83d5fe3912b30315ca117823a5ee445822698cda04e89d1fed19
       labels:
         app.kubernetes.io/component: ruler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.2.0
-        helm.sh/chart: mimir-distributed-3.0.0
+        app.kubernetes.io/version: 2.4.0
+        helm.sh/chart: mimir-distributed-3.3.0
       namespace: syn-mimir
     spec:
       affinity: {}
@@ -49,7 +49,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.2.0
+          image: grafana/mimir:2.4.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ruler
@@ -88,6 +88,15 @@ spec:
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 180
       tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ruler
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
       volumes:
         - configMap:
             items:

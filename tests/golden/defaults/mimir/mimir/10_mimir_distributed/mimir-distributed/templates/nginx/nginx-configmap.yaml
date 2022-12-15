@@ -10,8 +10,8 @@ data:
     \ \"$http_referer\" '\n        '\"$http_user_agent\" \"$http_x_forwarded_for\"\
     ';\n  access_log   /dev/stderr  main;\n\n  sendfile     on;\n  tcp_nopush   on;\n\
     \  resolver kube-dns.kube-system.svc.cluster.local;\n\n  # Ensure that X-Scope-OrgID\
-    \ is always present, default to \"anonymous\" for backwards compatibility when\
-    \ multi-tenancy was turned off.\n  map $http_x_scope_orgid $ensured_x_scope_orgid\
+    \ is always present, default to the no_auth_tenant for backwards compatibility\
+    \ when multi-tenancy was turned off.\n  map $http_x_scope_orgid $ensured_x_scope_orgid\
     \ {\n    default $http_x_scope_orgid;\n    \"\" \"anonymous\";\n  }\n\n  server\
     \ {\n    listen 8080;\n\n    location = / {\n      return 200 'OK';\n      auth_basic\
     \ off;\n    }\n\n    proxy_set_header X-Scope-OrgID $ensured_x_scope_orgid;\n\n\
@@ -32,6 +32,8 @@ data:
     \ {\n      proxy_pass      http://mimir-query-frontend.syn-mimir.svc.cluster.local:8080$request_uri;\n\
     \    }\n\n    # Buildinfo endpoint can go to any component\n    location = /api/v1/status/buildinfo\
     \ {\n      proxy_pass      http://mimir-query-frontend.syn-mimir.svc.cluster.local:8080$request_uri;\n\
+    \    }\n\n    # Compactor endpoint for uploading blocks\n    location /api/v1/upload/block/\
+    \ {\n      proxy_pass      http://mimir-compactor.syn-mimir.svc.cluster.local:8080$request_uri;\n\
     \    }\n  }\n}\n"
 kind: ConfigMap
 metadata:
@@ -40,7 +42,7 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.4.0
+    helm.sh/chart: mimir-distributed-3.3.0
   name: mimir-nginx
   namespace: syn-mimir
