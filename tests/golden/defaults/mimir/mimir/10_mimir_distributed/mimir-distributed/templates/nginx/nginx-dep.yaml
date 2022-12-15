@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.4.0
+    helm.sh/chart: mimir-distributed-3.3.0
   name: mimir-nginx
   namespace: syn-mimir
 spec:
@@ -24,34 +24,22 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 51379e831496cb18465aff6c0abbece0338db8651d5d7bbbf9343b5c47243b97
+        checksum/config: e91038dbe95fe53383aa837d7ae5beda83e2bc84ec080169c92b4a916bb674c9
       labels:
         app.kubernetes.io/component: nginx
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.2.0
-        helm.sh/chart: mimir-distributed-3.0.0
+        app.kubernetes.io/version: 2.4.0
+        helm.sh/chart: mimir-distributed-3.3.0
       namespace: syn-mimir
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - nginx
-                topologyKey: failure-domain.beta.kubernetes.io/zone
-              weight: 100
       containers:
         - env: null
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.19-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:1.22-alpine
           imagePullPolicy: IfNotPresent
           name: nginx
           ports:
@@ -85,6 +73,15 @@ spec:
         runAsUser: 101
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: nginx
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
       volumes:
         - configMap:
             name: mimir-nginx

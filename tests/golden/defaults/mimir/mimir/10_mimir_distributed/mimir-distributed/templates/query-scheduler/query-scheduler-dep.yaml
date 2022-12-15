@@ -1,57 +1,49 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: ingester
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/part-of: memberlist
     app.kubernetes.io/version: 2.4.0
     helm.sh/chart: mimir-distributed-3.3.0
-  name: mimir-ingester
+  name: mimir-query-scheduler
   namespace: syn-mimir
 spec:
-  podManagementPolicy: Parallel
-  replicas: 4
+  replicas: 2
   selector:
     matchLabels:
-      app.kubernetes.io/component: ingester
+      app.kubernetes.io/component: query-scheduler
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
-  serviceName: mimir-ingester-headless
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
         checksum/config: 2fbc90000cca83d5fe3912b30315ca117823a5ee445822698cda04e89d1fed19
       labels:
-        app.kubernetes.io/component: ingester
+        app.kubernetes.io/component: query-scheduler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/part-of: memberlist
         app.kubernetes.io/version: 2.4.0
         helm.sh/chart: mimir-distributed-3.3.0
-      namespace: syn-mimir
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: target
-                    operator: In
-                    values:
-                      - ingester
-              topologyKey: kubernetes.io/hostname
+      affinity: {}
       containers:
         - args:
-            - -target=ingester
+            - -target=query-scheduler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-            - -ingester.ring.instance-availability-zone=zone-default
+            - -server.grpc.keepalive.max-connection-age=2562047h
+            - -server.grpc.keepalive.max-connection-age-grace=2562047h
           env: null
           envFrom:
             - secretRef:
@@ -59,7 +51,7 @@ spec:
           image: grafana/mimir:2.4.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
-          name: ingester
+          name: query-scheduler
           ports:
             - containerPort: 8080
               name: http-metrics
@@ -67,37 +59,34 @@ spec:
             - containerPort: 9095
               name: grpc
               protocol: TCP
-            - containerPort: 7946
-              name: memberlist
-              protocol: TCP
           readinessProbe:
             httpGet:
               path: /ready
               port: http-metrics
-            initialDelaySeconds: 60
+            initialDelaySeconds: 45
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              memory: 128Mi
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
-            - mountPath: /etc/mimir
-              name: config
             - mountPath: /var/mimir
               name: runtime-config
+            - mountPath: /etc/mimir
+              name: config
             - mountPath: /data
               name: storage
       initContainers: []
       nodeSelector: {}
       securityContext: {}
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
+      terminationGracePeriodSeconds: 180
       tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
-              app.kubernetes.io/component: ingester
+              app.kubernetes.io/component: query-scheduler
               app.kubernetes.io/instance: mimir
               app.kubernetes.io/name: mimir
           maxSkew: 1
@@ -113,14 +102,5 @@ spec:
         - configMap:
             name: mimir-runtime
           name: runtime-config
-  updateStrategy:
-    type: RollingUpdate
-  volumeClaimTemplates:
-    - metadata:
-        name: storage
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 50Gi
+        - emptyDir: {}
+          name: storage
