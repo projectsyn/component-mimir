@@ -3,15 +3,17 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: overrides-exporter
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/version: 2.5.0
     helm.sh/chart: mimir-distributed-4.0.1
-  name: mimir-overrides-exporter
+    prometheus.io/service-monitor: 'false'
+  name: mimir-query-scheduler-headless
   namespace: syn-mimir
 spec:
+  clusterIP: None
   ports:
     - name: http-metrics
       port: 8080
@@ -21,8 +23,9 @@ spec:
       port: 9095
       protocol: TCP
       targetPort: grpc
+  publishNotReadyAddresses: true
   selector:
-    app.kubernetes.io/component: overrides-exporter
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/name: mimir
   type: ClusterIP

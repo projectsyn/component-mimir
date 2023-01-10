@@ -1,38 +1,49 @@
 apiVersion: v1
 data:
-  mimir.yaml: "\nactivity_tracker:\n  filepath: /data/metrics-activity.log\nalertmanager:\n\
-    \  data_dir: /data\n  enable_api: true\n  external_url: /alertmanager\nalertmanager_storage:\n\
+  mimir.yaml: "\nactivity_tracker:\n  filepath: /active-query-tracker/activity.log\n\
+    alertmanager:\n  data_dir: /data\n  enable_api: true\n  external_url: /alertmanager\n\
+    \  fallback_config_file: /configs/alertmanager_fallback_config.yaml\nalertmanager_storage:\n\
     \  s3:\n    access_key_id: ${S3_ACCESS_KEY_ID}\n    bucket_name: mimir-alertmanager-bucket\n\
     \    endpoint: ${S3_ENDPOINT}\n    secret_access_key: ${S3_SECRET_ACCESS_KEY}\n\
     blocks_storage:\n  backend: s3\n  bucket_store:\n    chunks_cache:\n      backend:\
     \ memcached\n      memcached:\n        addresses: dns+mimir-chunks-cache.syn-mimir.svc:11211\n\
     \        max_item_size: 1048576\n        timeout: 450ms\n    index_cache:\n  \
     \    backend: memcached\n      memcached:\n        addresses: dns+mimir-index-cache.syn-mimir.svc:11211\n\
-    \        max_item_size: 15728640\n    metadata_cache:\n      backend: memcached\n\
-    \      memcached:\n        addresses: dns+mimir-metadata-cache.syn-mimir.svc:11211\n\
+    \        max_item_size: 5242880\n    max_chunk_pool_bytes: 12884901888\n    metadata_cache:\n\
+    \      backend: memcached\n      memcached:\n        addresses: dns+mimir-metadata-cache.syn-mimir.svc:11211\n\
     \        max_item_size: 1048576\n    sync_dir: /data/tsdb-sync\n  s3:\n    access_key_id:\
     \ ${S3_ACCESS_KEY_ID}\n    bucket_name: mimir-blocks-bucket\n    endpoint: ${S3_ENDPOINT}\n\
     \    secret_access_key: ${S3_SECRET_ACCESS_KEY}\n  tsdb:\n    dir: /data/tsdb\n\
-    compactor:\n  data_dir: /data\nfrontend:\n  align_queries_with_step: true\n  cache_results:\
-    \ true\n  log_queries_longer_than: 10s\n  results_cache:\n    backend: memcached\n\
-    \    memcached:\n      addresses: dns+mimir-results-cache.syn-mimir.svc:11211\n\
-    \      max_item_size: 1048576\nfrontend_worker:\n  frontend_address: mimir-query-frontend-headless.syn-mimir.svc:9095\n\
-    ingester:\n  ring:\n    final_sleep: 0s\n    num_tokens: 512\n    unregister_on_shutdown:\
-    \ false\ningester_client:\n  grpc_client_config:\n    max_recv_msg_size: 104857600\n\
-    \    max_send_msg_size: 104857600\nlimits: {}\nmemberlist:\n  abort_if_cluster_join_fails:\
-    \ false\n  compression_enabled: false\n  join_members:\n  - mimir-gossip-ring\n\
-    ruler:\n  alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.mimir-alertmanager-headless.syn-mimir.svc.cluster.local/alertmanager\n\
+    compactor:\n  compaction_interval: 30m\n  data_dir: /data\n  deletion_delay: 2h\n\
+    \  max_closing_blocks_concurrency: 2\n  max_opening_blocks_concurrency: 4\n  sharding_ring:\n\
+    \    wait_stability_min_duration: 1m\n  symbols_flushers_concurrency: 4\nfrontend:\n\
+    \  cache_results: true\n  parallelize_shardable_queries: true\n  results_cache:\n\
+    \    backend: memcached\n    memcached:\n      addresses: dns+mimir-results-cache.syn-mimir.svc:11211\n\
+    \      max_item_size: 1048576\n      timeout: 500ms\n  scheduler_address: mimir-query-scheduler-headless.syn-mimir.svc:9095\n\
+    frontend_worker:\n  grpc_client_config:\n    max_send_msg_size: 419430400\n  scheduler_address:\
+    \ mimir-query-scheduler-headless.syn-mimir.svc:9095\ningester:\n  ring:\n    final_sleep:\
+    \ 0s\n    num_tokens: 512\n    tokens_file_path: /data/tokens\n    unregister_on_shutdown:\
+    \ false\n    zone_awareness_enabled: true\ningester_client:\n  grpc_client_config:\n\
+    \    max_recv_msg_size: 104857600\n    max_send_msg_size: 104857600\nlimits:\n\
+    \  max_cache_freshness: 10m\n  max_query_parallelism: 240\nmemberlist:\n  abort_if_cluster_join_fails:\
+    \ false\n  compression_enabled: false\n  join_members:\n  - dns+mimir-gossip-ring.syn-mimir.svc.cluster.local:7946\n\
+    querier:\n  max_concurrent: 16\nquery_scheduler:\n  max_outstanding_requests_per_tenant:\
+    \ 800\nruler:\n  alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.mimir-alertmanager-headless.syn-mimir.svc.cluster.local/alertmanager\n\
     \  enable_api: true\n  rule_path: /data\nruler_storage:\n  s3:\n    access_key_id:\
     \ ${S3_ACCESS_KEY_ID}\n    bucket_name: mimir-ruler-bucket\n    endpoint: ${S3_ENDPOINT}\n\
     \    secret_access_key: ${S3_SECRET_ACCESS_KEY}\nruntime_config:\n  file: /var/mimir/runtime.yaml\n\
-    server:\n  grpc_server_max_concurrent_streams: 1000\n"
+    server:\n  grpc_server_max_concurrent_streams: 1000\n  grpc_server_max_connection_age:\
+    \ 2m\n  grpc_server_max_connection_age_grace: 5m\n  grpc_server_max_connection_idle:\
+    \ 1m\nstore_gateway:\n  sharding_ring:\n    kvstore:\n      prefix: multi-zone/\n\
+    \    tokens_file_path: /data/tokens\n    wait_stability_min_duration: 1m\n   \
+    \ zone_awareness_enabled: true\nusage_stats:\n  installation_mode: helm\n"
 kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: mimir-distributed-4.0.1
   name: mimir-config
   namespace: syn-mimir
