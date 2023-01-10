@@ -3,13 +3,13 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: overrides-exporter
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/version: 2.5.0
     helm.sh/chart: mimir-distributed-4.0.1
-  name: mimir-overrides-exporter
+  name: mimir-query-scheduler
   namespace: syn-mimir
 spec:
   ports:
@@ -22,7 +22,7 @@ spec:
       protocol: TCP
       targetPort: grpc
   selector:
-    app.kubernetes.io/component: overrides-exporter
+    app.kubernetes.io/component: query-scheduler
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/name: mimir
   type: ClusterIP
