@@ -1,10 +1,8 @@
 apiVersion: v1
 data:
-  runtime.yaml: '
+  runtime.yaml: |2
 
     {}
-
-    '
 kind: ConfigMap
 metadata:
   labels:
