@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
   name: mimir-metadata-cache
   namespace: syn-mimir
 spec:
@@ -29,8 +29,8 @@ spec:
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.2.0
-        helm.sh/chart: mimir-distributed-3.0.0
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
     spec:
       affinity: {}
       containers:
@@ -46,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: memcached:1.6.9-alpine
+          image: memcached:1.6.17-alpine
           imagePullPolicy: IfNotPresent
           name: memcached
           ports:
@@ -76,15 +76,24 @@ spec:
           resources:
             limits: {}
             requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
       initContainers: []
       nodeSelector: {}
       securityContext:
-        fsGroup: 11211
-        runAsGroup: 11211
+        fsGroup: 10001
+        runAsGroup: 10001
         runAsNonRoot: true
-        runAsUser: 11211
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 60
       tolerations: []
+      topologySpreadConstraints: null
   updateStrategy:
     type: RollingUpdate
