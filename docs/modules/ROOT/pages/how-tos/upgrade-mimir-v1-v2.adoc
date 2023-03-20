@@ -1,0 +1,272 @@
+= Upgrade component version v1 to v2
+
+When migrating from component version v1 to v2, the following breaking changes require manual setup of zone aware replication on existing instances:
+
+* https://github.com/grafana/mimir/blob/main/operations/helm/charts/mimir-distributed/CHANGELOG.md#400[mimir-distributed] enables zone aware replication for ingesters by default. An upgrade without manual migration will incur data loss.
+
+
+== Prerequisites
+
+You need to be able to execute the following CLI tools locally:
+
+* `yq` https://github.com/mikefarah/yq[yq YAML processor] (Version 4 or newer)
+
+== Setup environment
+
+. Access to API
++
+[source,bash]
+----
+# For example: https://api.syn.vshn.net
+# IMPORTANT: do NOT add a trailing `/`. Commands below will fail.
+export COMMODORE_API_URL=<lieutenant-api-endpoint>
+
+export CLUSTER_ID=<lieutenant-cluster-id> # Looks like: c-<something>
+export TENANT_ID=$(curl -sH "Authorization: Bearer $(commodore fetch-token)" ${COMMODORE_API_URL}/clusters/${CLUSTER_ID} | jq -r .tenant)
+
+# Instance name under which you include the mimir component in your tenant repo
+export MIMIR_INSTANCE=<mimir-instance-name>
+export MIMIR_PARAM_KEY="$( echo $MIMIR_INSTANCE | sed -e 's/-/_/g' )"
+----
+
+== Upgrade the component without zone aware replication
+
+. Compile the cluster catalog to create a local working directory
++
+[source,bash]
+----
+commodore catalog compile "${CLUSTER_ID}"
+----
+
+. Update the component version to v2.x in your cluster configuration:
++
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.components.mimir.version = v2.0.0" ${CLUSTER_ID}.yml
+
+cd ../../..
+----
+
+. Add temporary migration configuration:
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareReplication.enabled = false" ${CLUSTER_ID}.yml
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.ingester.zoneAwareReplication.enabled = false" ${CLUSTER_ID}.yml
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.store_gateway.zoneAwareReplication.enabled = false" ${CLUSTER_ID}.yml
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator.enabled = false" ${CLUSTER_ID}.yml
+
+git commit -am"Update component mimir" && git push origin master
+
+cd ../../..
+----
++
+This configuration disables zone aware replication. In the first step, the new component version is deployed with this setting disabled.
+
+. Compile and push the cluster catalog
+. Wait for all relevant pods to start and become ready
+
+== Migrate Alertmanager
+
+. Update the confiugration for alertmanager
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareReplication.enabled = true" ${CLUSTER_ID}.yml
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareReplication.migration.enabled = true" ${CLUSTER_ID}.yml
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator.enabled = true" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - step 1" && git push origin master
+
+cd ../../..
+----
+
+. Compile and push the cluster catalog
+. Wait for all alertmanager pods to restart and become ready
+. Once that's done, enable the write path for the new zone aware alertmanager:
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareReplication.migration.writePath = true" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - step 2" && git push origin master
+
+cd ../../..
+----
+
+. Compile and push the cluster catalog
+. Wait for the new zone-aware alertmanager pods to become ready
+
+. Next, set the final configuration (meaning the default configuration) by removing the custom `alertmanager` config block:
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager)" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - final step" && git push origin master
+
+cd ../../..
+----
+. Compile and push the cluster catalog
+. Wait for the old zone-unaware alertmanager pods to be terminated
+
+== Migrate store-gateway
+
+. Disable auto sync on the `root` and `mimir` apps in ArgoCD
++
+[source,bash]
+----
+kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=cluster-admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+----
+
+. Scale down the store-gateway pods
++
+[source,bash]
+----
+kubectl scale sts -l app.kubernetes.io/component=store-gateway -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+----
+
+. Wait for all store-gateway pods to terminate
+
+. Next, set the final configuration (meaning the default configuration) by removing the custom `store_gateway` config block:
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.store_gateway)" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE store_gateway" && git push origin master
+
+cd ../../..
+----
+. Compile and push the cluster catalog
+. Re-enable argocd sync
++
+[source,bash]
+----
+kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
+----
+
+. Wait for the new store-gateways to become ready
+
+== Migrate ingesters
+
+. Configure the ingesters to flush data on shutdown
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.mimir.structuredConfig.blocks_storage.tsdb.flush_blocks_on_shutdown = true" ${CLUSTER_ID}.yml
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.mimir.structuredConfig.ingester.ring.unregister_on_shutdown = true" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE ingesters - step 1" && git push origin master
+
+cd ../../..
+----
+
+. Compile and push the cluster catalog
+. Wait for all ingester pods to restart and become ready
+
+. Disable auto sync on the `root` and `mimir` apps in ArgoCD
++
+[source,bash]
+----
+kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=cluster-admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+----
+
+. Scale down the traffic to the ingesters
++
+[source,bash]
+----
+kubectl scale deploy -l app.kubernetes.io/component=nginx -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+kubectl scale deploy -l app.kubernetes.io/component=gateway -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+----
+
+. Wait for all nginx and gateway pods to terminate
+
+. Next, scale down the old zone-unaware ingesters as well:
++
+[source,bash]
+----
+kubectl scale sts -l app.kubernetes.io/component=ingester -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+----
+
+. Wait for the ingesters to terminate
+
+. Now, enable the zone-aware ingesters
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.ingester.zoneAwareReplication.enabled = true" ${CLUSTER_ID}.yml
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.ingester.replicas)" ${CLUSTER_ID}.yml
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.mimir)" ${CLUSTER_ID}.yml
+
+git commit -am"Migrate $MIMIR_INSTANCE ingesters - step 2" && git push origin master
+
+cd ../../..
+----
+. Compile and push the cluster catalog
+. Re-enable argocd sync
++
+[source,bash]
+----
+kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
+----
+
+. Wait for the new ingesters to become ready
+
+. Next, set the final configuration (meaning the default configuration) by removing the custom configuration:
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.ingester)" ${CLUSTER_ID}.yml
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.nginx)" ${CLUSTER_ID}.yml
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.gateway)" ${CLUSTER_ID}.yml
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator)" ${CLUSTER_ID}.yml
+
+git commit -am"Finalize $MIMIR_INSTANCE mimir migration" && git push origin master
+
+cd ../../..
+----
++
+Alternatively, if your cluster configuration didn't previously contain parameters for the mimir component, you can remove the entire parameter block for your component instance.
++
+[source,bash]
+----
+cd inventory/classes/$TENANT_ID
+
+yq eval -i "del(.parameters.${MIMIR_PARAM_KEY})" ${CLUSTER_ID}.yml
+
+git commit -am"Finalize $MIMIR_INSTANCE mimir migration" && git push origin master
+
+cd ../../..
+----
+
+. Compile and push the cluster catalog
+. Wait for all relevant pods to become ready
+
+== Cleanup
+
+. If all your mimir instances are migrated, move the component version parameter to the appropriate place in your hierarchy
