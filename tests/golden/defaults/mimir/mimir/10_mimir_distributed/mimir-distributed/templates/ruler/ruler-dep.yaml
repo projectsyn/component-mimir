@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
   name: mimir-ruler
   namespace: syn-mimir
 spec:
@@ -21,22 +21,22 @@ spec:
       app.kubernetes.io/name: mimir
   strategy:
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 50%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: a65fac97c71478d5409c613eb7acbb01d8d935072ad49df2a2682ca49d7a962a
+        checksum/config: ac579e7442c16c3b4537c7956131985684e98b09290e8bb9cea9bc7116a68fd8
       labels:
         app.kubernetes.io/component: ruler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.2.0
-        helm.sh/chart: mimir-distributed-3.0.0
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
       namespace: syn-mimir
     spec:
       affinity: {}
@@ -49,7 +49,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.2.0
+          image: grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ruler
@@ -73,6 +73,10 @@ spec:
               cpu: 100m
               memory: 128Mi
           securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
             readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /etc/mimir
@@ -82,12 +86,29 @@ spec:
             - mountPath: /data
               name: storage
               subPath: null
+            - mountPath: /active-query-tracker
+              name: active-queries
       initContainers: []
       nodeSelector: {}
-      securityContext: {}
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 180
       tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ruler
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
       volumes:
         - configMap:
             items:
@@ -100,3 +121,5 @@ spec:
           name: runtime-config
         - emptyDir: {}
           name: storage
+        - emptyDir: {}
+          name: active-queries
