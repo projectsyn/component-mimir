@@ -62,7 +62,7 @@ yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.store_gateway.zoneAwareRe
 
 yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator.enabled = false" ${CLUSTER_ID}.yml
 
-git commit -am'Update mimir' && git push origin master
+git commit -am"Update component mimir" && git push origin master
 
 cd ../../..
 ----
@@ -86,7 +86,7 @@ yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareRep
 
 yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator.enabled = true" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate alertmanager - step 1' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - step 1" && git push origin master
 
 cd ../../..
 ----
@@ -101,7 +101,7 @@ cd inventory/classes/$TENANT_ID
 
 yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager.zoneAwareReplication.migration.writePath = true" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate alertmanager - step 2' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - step 2" && git push origin master
 
 cd ../../..
 ----
@@ -117,7 +117,7 @@ cd inventory/classes/$TENANT_ID
 
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.alertmanager)" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate alertmanager - final step' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE alertmanager - final step" && git push origin master
 
 cd ../../..
 ----
@@ -151,7 +151,7 @@ cd inventory/classes/$TENANT_ID
 
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.store_gateway)" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate store_gateway' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE store_gateway" && git push origin master
 
 cd ../../..
 ----
@@ -176,7 +176,7 @@ cd inventory/classes/$TENANT_ID
 yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.mimir.structuredConfig.blocks_storage.tsdb.flush_blocks_on_shutdown = true" ${CLUSTER_ID}.yml
 yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.mimir.structuredConfig.ingester.ring.unregister_on_shutdown = true" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate ingesters - step 1' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE ingesters - step 1" && git push origin master
 
 cd ../../..
 ----
@@ -221,7 +221,7 @@ yq eval -i ".parameters.${MIMIR_PARAM_KEY}.helm_values.ingester.zoneAwareReplica
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.ingester.replicas)" ${CLUSTER_ID}.yml
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.mimir)" ${CLUSTER_ID}.yml
 
-git commit -am'Migrate ingesters - step 2' && git push origin master
+git commit -am"Migrate $MIMIR_INSTANCE ingesters - step 2" && git push origin master
 
 cd ../../..
 ----
@@ -246,7 +246,7 @@ yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.nginx)" ${CLUSTER_ID}
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.gateway)" ${CLUSTER_ID}.yml
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY}.helm_values.rollout_operator)" ${CLUSTER_ID}.yml
 
-git commit -am'Finalize mimir migration' && git push origin master
+git commit -am"Finalize $MIMIR_INSTANCE mimir migration" && git push origin master
 
 cd ../../..
 ----
@@ -259,7 +259,7 @@ cd inventory/classes/$TENANT_ID
 
 yq eval -i "del(.parameters.${MIMIR_PARAM_KEY})" ${CLUSTER_ID}.yml
 
-git commit -am'Finalize mimir migration' && git push origin master
+git commit -am"Finalize $MIMIR_INSTANCE mimir migration" && git push origin master
 
 cd ../../..
 ----
