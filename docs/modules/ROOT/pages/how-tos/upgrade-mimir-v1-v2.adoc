@@ -40,10 +40,11 @@ commodore catalog compile "${CLUSTER_ID}"
 
 . Update the component version to v2.x in your cluster configuration:
 +
+[source,bash]
 ----
 cd inventory/classes/$TENANT_ID
 
-yq eval -i ".parameters.components.mimir.version = v2.0.0" ${CLUSTER_ID}.yml
+yq eval -i '.parameters.components.mimir.version = "v2.0.1"' ${CLUSTER_ID}.yml
 
 cd ../../..
 ----

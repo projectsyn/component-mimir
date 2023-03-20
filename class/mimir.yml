@@ -27,3 +27,9 @@ parameters:
         helm_params:
           name: ${mimir:name}
           namespace: ${mimir:namespace:name}
+  commodore:
+    postprocess:
+      filters:
+        - type: jsonnet
+          filter: postprocess/remove-null-objs.jsonnet
+          path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/minio
