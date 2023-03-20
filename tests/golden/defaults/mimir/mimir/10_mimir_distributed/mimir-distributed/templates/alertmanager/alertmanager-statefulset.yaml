@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.2.0
-    helm.sh/chart: mimir-distributed-3.0.0
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
   name: mimir-alertmanager
   namespace: syn-mimir
 spec:
@@ -24,15 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: a65fac97c71478d5409c613eb7acbb01d8d935072ad49df2a2682ca49d7a962a
+        checksum/alertmanager-fallback-config: d7cc002124943a504c792ba298711410d73b0a974b149fc6920c045c425952c1
+        checksum/config: ac579e7442c16c3b4537c7956131985684e98b09290e8bb9cea9bc7116a68fd8
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.2.0
-        helm.sh/chart: mimir-distributed-3.0.0
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
       namespace: syn-mimir
     spec:
       affinity: {}
@@ -45,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.2.0
+          image: grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
@@ -69,6 +70,10 @@ spec:
               cpu: 10m
               memory: 32Mi
           securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
             readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /etc/mimir
@@ -77,14 +82,33 @@ spec:
               name: runtime-config
             - mountPath: /data
               name: storage
+            - mountPath: /configs/
+              name: alertmanager-fallback-config
             - mountPath: /tmp
               name: tmp
+            - mountPath: /active-query-tracker
+              name: active-queries
       initContainers: []
       nodeSelector: {}
-      securityContext: {}
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 60
       tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: alertmanager
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
       volumes:
         - configMap:
             items:
@@ -97,6 +121,11 @@ spec:
           name: runtime-config
         - emptyDir: {}
           name: tmp
+        - emptyDir: {}
+          name: active-queries
+        - configMap:
+            name: mimir-alertmanager-fallback-config
+          name: alertmanager-fallback-config
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
