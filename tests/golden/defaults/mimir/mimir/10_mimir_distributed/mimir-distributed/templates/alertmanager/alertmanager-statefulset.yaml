@@ -66,9 +66,11 @@ spec:
               port: http-metrics
             initialDelaySeconds: 45
           resources:
+            limits:
+              memory: 1.4Gi
             requests:
-              cpu: 10m
-              memory: 32Mi
+              cpu: 1
+              memory: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

@@ -76,9 +76,11 @@ spec:
               port: http-metrics
             initialDelaySeconds: 60
           resources:
+            limits:
+              memory: 12Gi
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 3.5
+              memory: 8Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -217,9 +219,11 @@ spec:
               port: http-metrics
             initialDelaySeconds: 60
           resources:
+            limits:
+              memory: 12Gi
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 3.5
+              memory: 8Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -358,9 +362,11 @@ spec:
               port: http-metrics
             initialDelaySeconds: 60
           resources:
+            limits:
+              memory: 12Gi
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 3.5
+              memory: 8Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
