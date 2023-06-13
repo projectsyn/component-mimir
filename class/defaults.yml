@@ -34,6 +34,7 @@ parameters:
       mimir:
         structuredConfig:
           alertmanager_storage:
+            backend: s3
             s3:
               bucket_name: ${mimir:name}-alertmanager-bucket
               access_key_id: \${S3_ACCESS_KEY_ID}
@@ -47,6 +48,7 @@ parameters:
               endpoint: \${S3_ENDPOINT}
               secret_access_key: \${S3_SECRET_ACCESS_KEY}
           ruler_storage:
+            backend: s3
             s3:
               bucket_name: ${mimir:name}-ruler-bucket
               access_key_id: \${S3_ACCESS_KEY_ID}
