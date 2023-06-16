@@ -1,13 +1,13 @@
 {
   "template": "https://github.com/projectsyn/commodore-component-template.git",
-  "commit": "d666b4a3ff84f7cafc794ba1c11a7377b2e6d3c5",
+  "commit": "3579ec7932501e713856a6cae23fcea3ae0ab242",
   "checkout": "main",
   "context": {
     "cookiecutter": {
       "name": "mimir",
       "slug": "mimir",
       "parameter_key": "mimir",
-      "test_cases": "defaults",
+      "test_cases": "defaults global-node-selector",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",
