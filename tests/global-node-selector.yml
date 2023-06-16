@@ -1,0 +1,6 @@
+# Overwrite parameters here
+
+parameters:
+  mimir:
+    globalNodeSelector:
+      appuio.io/node-class: plus

@@ -1,0 +1,431 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    rollout-max-unavailable: '25'
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
+    name: ingester-zone-a
+    rollout-group: ingester
+    zone: zone-a
+  name: mimir-ingester-zone-a
+  namespace: syn-mimir
+spec:
+  podManagementPolicy: Parallel
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+      rollout-group: ingester
+      zone: zone-a
+  serviceName: mimir-ingester-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+      labels:
+        app.kubernetes.io/component: ingester
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
+        name: ingester-zone-a
+        rollout-group: ingester
+        zone: zone-a
+      namespace: syn-mimir
+    spec:
+      affinity: {}
+      containers:
+        - args:
+            - -target=ingester
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -ingester.ring.instance-availability-zone=zone-a
+          env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: grafana/mimir:2.7.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: ingester
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              memory: 12Gi
+            requests:
+              cpu: 3.5
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      initContainers: []
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 240
+      tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ingester
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
+          name: config
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: active-queries
+  updateStrategy:
+    type: OnDelete
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    rollout-max-unavailable: '25'
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
+    name: ingester-zone-b
+    rollout-group: ingester
+    zone: zone-b
+  name: mimir-ingester-zone-b
+  namespace: syn-mimir
+spec:
+  podManagementPolicy: Parallel
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+      rollout-group: ingester
+      zone: zone-b
+  serviceName: mimir-ingester-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+      labels:
+        app.kubernetes.io/component: ingester
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
+        name: ingester-zone-b
+        rollout-group: ingester
+        zone: zone-b
+      namespace: syn-mimir
+    spec:
+      affinity: {}
+      containers:
+        - args:
+            - -target=ingester
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -ingester.ring.instance-availability-zone=zone-b
+          env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: grafana/mimir:2.7.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: ingester
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              memory: 12Gi
+            requests:
+              cpu: 3.5
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      initContainers: []
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 240
+      tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ingester
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
+          name: config
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: active-queries
+  updateStrategy:
+    type: OnDelete
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    rollout-max-unavailable: '25'
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
+    name: ingester-zone-c
+    rollout-group: ingester
+    zone: zone-c
+  name: mimir-ingester-zone-c
+  namespace: syn-mimir
+spec:
+  podManagementPolicy: Parallel
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+      rollout-group: ingester
+      zone: zone-c
+  serviceName: mimir-ingester-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+      labels:
+        app.kubernetes.io/component: ingester
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
+        name: ingester-zone-c
+        rollout-group: ingester
+        zone: zone-c
+      namespace: syn-mimir
+    spec:
+      affinity: {}
+      containers:
+        - args:
+            - -target=ingester
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -ingester.ring.instance-availability-zone=zone-c
+          env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: grafana/mimir:2.7.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: ingester
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              memory: 12Gi
+            requests:
+              cpu: 3.5
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      initContainers: []
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 240
+      tolerations: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ingester
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
+          name: config
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: active-queries
+  updateStrategy:
+    type: OnDelete
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi

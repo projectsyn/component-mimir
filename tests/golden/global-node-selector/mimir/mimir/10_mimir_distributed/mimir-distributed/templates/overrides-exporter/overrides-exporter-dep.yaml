@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: overrides-exporter
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
+  name: mimir-overrides-exporter
+  namespace: syn-mimir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: overrides-exporter
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+      labels:
+        app.kubernetes.io/component: overrides-exporter
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
+      namespace: syn-mimir
+    spec:
+      affinity: {}
+      containers:
+        - args:
+            - -target=overrides-exporter
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+          env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: grafana/mimir:2.7.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          name: overrides-exporter
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+              subPath: null
+            - mountPath: /active-query-tracker
+              name: active-queries
+      initContainers: []
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 60
+      tolerations: []
+      topologySpreadConstraints: null
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
+          name: config
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: active-queries
