@@ -16,6 +16,8 @@ parameters:
           S3_SECRET_ACCESS_KEY: null
           S3_ENDPOINT: null
 
+    globalNodeSelector: {}
+
     charts:
       mimir-distributed: "4.3.0"
 
@@ -56,6 +58,7 @@ parameters:
               secret_access_key: \${S3_SECRET_ACCESS_KEY}
 
       alertmanager:
+        nodeSelector: ${mimir:globalNodeSelector}
         persistentVolume:
           enabled: true
         resources:
@@ -69,6 +72,7 @@ parameters:
           enabled: true
 
       compactor:
+        nodeSelector: ${mimir:globalNodeSelector}
         persistentVolume:
           size: 50Gi
         resources:
@@ -79,6 +83,7 @@ parameters:
             memory: 1.5Gi
 
       distributor:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 3
         resources:
           limits:
@@ -88,6 +93,8 @@ parameters:
             memory: 4Gi
 
       ingester:
+        # NOTE: this is ignored if `zoneAwareReplication.enabled=true`
+        nodeSelector: ${mimir:globalNodeSelector}
         persistentVolume:
           size: 50Gi
         replicas: 4
@@ -107,9 +114,21 @@ parameters:
                       values:
                         - ingester
                 topologyKey: 'kubernetes.io/hostname'
+        zoneAwareReplication:
+          # Replicating helm chart default
+          enabled: true
+          zones:
+            - name: zone-a
+              nodeSelector: ${mimir:globalNodeSelector}
+            - name: zone-b
+              nodeSelector: ${mimir:globalNodeSelector}
+            - name: zone-c
+              nodeSelector: ${mimir:globalNodeSelector}
+
 
       chunks-cache:
         enabled: true
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 2
         resources:
           limits:
@@ -120,6 +139,7 @@ parameters:
 
       index-cache:
         enabled: true
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 3
         resources:
           limits:
@@ -130,14 +150,18 @@ parameters:
 
       metadata-cache:
         enabled: true
+        nodeSelector: ${mimir:globalNodeSelector}
 
       results-cache:
         enabled: true
+        nodeSelector: ${mimir:globalNodeSelector}
 
       minio:
         enabled: false
+        nodeSelector: ${mimir:globalNodeSelector}
 
       overrides_exporter:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 1
         resources:
           limits:
@@ -147,6 +171,7 @@ parameters:
             memory: 128Mi
 
       querier:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 2
         resources:
           limits:
@@ -156,6 +181,7 @@ parameters:
             memory: 4Gi
 
       query_frontend:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 1
         resources:
           limits:
@@ -165,6 +191,7 @@ parameters:
             memory: 2Gi
 
       ruler:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 2
         resources:
           limits:
@@ -174,6 +201,8 @@ parameters:
             memory: 2Gi
 
       store_gateway:
+        # NOTE: Ignored when zoneAwareyReplication.enabled=true
+        nodeSelector: ${mimir:globalNodeSelector}
         persistentVolume:
           size: 20Gi
         resources:
@@ -183,9 +212,20 @@ parameters:
             cpu: 1
             memory: 1.5Gi
         replicas: 1
+        zoneAwareReplication:
+          # replicating the helm chart default
+          enabled: true
+          zones:
+            - name: zone-a
+              nodeSelector: ${mimir:globalNodeSelector}
+            - name: zone-b
+              nodeSelector: ${mimir:globalNodeSelector}
+            - name: zone-c
+              nodeSelector: ${mimir:globalNodeSelector}
 
       # Grafana Enterprise Metrics feature related
       admin_api:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 3
         resources:
           limits:
@@ -195,6 +235,7 @@ parameters:
             memory: 64Mi
 
       gateway:
+        nodeSelector: ${mimir:globalNodeSelector}
         replicas: 3
         resources:
           limits:
@@ -202,3 +243,12 @@ parameters:
           requests:
             cpu: 1
             memory: 512Mi
+
+      query_scheduler:
+        nodeSelector: ${mimir:globalNodeSelector}
+
+      nginx:
+        nodeSelector: ${mimir:globalNodeSelector}
+
+      rollout_operator:
+        nodeSelector: ${mimir:globalNodeSelector}

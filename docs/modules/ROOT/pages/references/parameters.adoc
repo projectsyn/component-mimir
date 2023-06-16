@@ -54,6 +54,15 @@ The value must be a dict with a key `stringData` which is a dict of key/value pa
 
 Holds the secrets for the S3 bucket by default.
 
+== `globalNodeSelector`
+
+[horizontal]
+type:: dict
+default:: `{}`
+
+Node selector configuration which is used for each component's `nodeSelector` field in parameter `helm_values`.
+
+This value is used verbatim as a Kubernetes node selector.
 
 == `charts`
 
