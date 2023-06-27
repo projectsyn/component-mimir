@@ -64,6 +64,17 @@ Node selector configuration which is used for each component's `nodeSelector` fi
 
 This value is used verbatim as a Kubernetes node selector.
 
+== `nginx_resolver_override`
+
+[horizontal]
+type:: string
+default:: `""`
+example:: `"172.30.0.10"`
+
+If set, the nginx resolver is set to this value.
+This can be used to insert the static IP of the cluster DNS server, which will fix the case when the resolved DNS service IP changes, but nginx keeps the old IP.
+
+
 == `charts`
 
 [horizontal]

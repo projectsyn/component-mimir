@@ -33,3 +33,6 @@ parameters:
         - type: jsonnet
           filter: postprocess/remove-null-objs.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/minio
+        - type: jsonnet
+          filter: postprocess/fixup-resolver.jsonnet
+          path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/nginx

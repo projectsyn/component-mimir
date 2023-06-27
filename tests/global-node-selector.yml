@@ -4,3 +4,4 @@ parameters:
   mimir:
     globalNodeSelector:
       appuio.io/node-class: plus
+    nginx_resolver_override: "172.30.0.10"
