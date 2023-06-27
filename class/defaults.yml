@@ -21,6 +21,9 @@ parameters:
     charts:
       mimir-distributed: "4.3.0"
 
+    # Allows overriding the resolver for the mimir-distributed chart, if using nginx as the frontend.
+    nginx_resolver_override: ""
+
     # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
     # Replicas are taken from the `small.yaml` recommended production values.
     # See parameters.adoc for links to the upstream sizing guidelines.
