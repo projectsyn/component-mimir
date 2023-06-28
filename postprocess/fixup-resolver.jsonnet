@@ -5,8 +5,9 @@ local params = inv.parameters.mimir;
 local dir = std.extVar('output_path');
 local override = params.nginx_resolver_override;
 
+// overrides the nginx resolver with the value of the parameter
 local fix = function(o)
-  if override != '' && o.kind == 'ConfigMap' && o.metadata.name == 'mimir-nginx' && std.objectHas(o.data, 'nginx.conf') then
+  if override != '' && o.kind == 'ConfigMap' && std.objectHas(o.data, 'nginx.conf') then
     o {
       data+: {
         'nginx.conf': std.lines(std.map(
@@ -23,6 +24,4 @@ local fix = function(o)
   else
     o;
 
-// fixupDir already drops `null` objects, so we can just give the identity
-// function as the 2nd argument.
 com.fixupDir(dir, fix)
