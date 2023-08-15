@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: mimir-custom
+  name: mimir-custom
+  namespace: syn-mimir
+spec:
+  groups:
+    - name: mimir-custom.rules
+      rules:
+        - alert: CustomTestAlert
+          annotations:
+            summary: Test alert
+          expr: vector(1) == 0
+          for: 1h
+          labels:
+            severity: warning
+            syn: 'true'
+            syn_component: mimir
