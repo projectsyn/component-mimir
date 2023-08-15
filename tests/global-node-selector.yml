@@ -1,7 +1,42 @@
 # Overwrite parameters here
 
 parameters:
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/v5.5.1/lib/openshift4-monitoring-alert-patching.libsonnet
+        output_path: vendor/lib/alert-patching.libsonnet
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/v5.5.1/lib/openshift4-monitoring-prom.libsonnet
+        output_path: vendor/lib/prom.libsonnet
+
   mimir:
     globalNodeSelector:
       appuio.io/node-class: plus
     nginx_resolver_override: "172.30.0.10"
+
+    alerts:
+      additionalRules:
+        "alert:CustomTestAlert":
+          expr: vector(1) == 0
+          for: 1h
+          annotations:
+            summary: Test alert
+          labels:
+            severity: warning
+      patchRules:
+        ignoreNames:
+          - MimirAutoscalerNotActive
+        patches:
+          MimirAutoscalerKedaFailing:
+            expr: |
+              !!!!!!!!!!!!!!!!!! vector(0) > 1
+
+    helm_values:
+      metaMonitoring:
+        serviceMonitor:
+          enabled: true
+        prometheusRule:
+          enabled: true
+          mimirAlerts: true
+          mimirRules: true

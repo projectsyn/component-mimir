@@ -54,6 +54,78 @@ The value must be a dict with a key `stringData` which is a dict of key/value pa
 
 Holds the secrets for the S3 bucket by default.
 
+
+== `alerts`
+
+Configurations related to alerts.
+
+[NOTE]
+====
+Upstream service monitors, rules, and alerts can be enabled by setting the following Helm values:
+
+[source,yaml]
+----
+helm_values:
+  metaMonitoring:
+    serviceMonitor:
+      enabled: true
+    prometheusRule:
+      enabled: true
+      mimirAlerts: true
+      mimirRules: true
+----
+====
+
+=== `alerts.patchRules`
+
+[horizontal]
+type:: dict
+default:: https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[See `class/defaults.yml`]
+example::
++
+[source,yaml]
+----
+patchRules:
+  ignoreNames:
+    - MimirContinuousTestNotRunningOnWrites
+  patches:
+    MimirInconsistentRuntimeConfig:
+      for: 15m
+----
+
+This parameter allows users to patch or remove alerts provided by the upstream Mimir chart.
+
+The values in the `ignoreNames` parameter correspond to the field `alert` of the alert to ignore.
+
+The keys in the `patches` parameter correspond to the field `alert` of the alert to patch.
+The component expects valid partial Prometheus alert rule objects as values.
+
+IMPORTANT: The provided values aren't validated, they're applied to the corresponding upstream alert as-is.
+
+
+=== `alerts.additionalRules`
+
+[horizontal]
+type:: dict
+default:: https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[See `class/defaults.yml`]
+example::
++
+[source,yaml]
+----
+additionalRules:
+  "alert:CustomTestAlert":
+    expr: vector(1) == 0
+    for: 1h
+    annotations:
+      summary: Test alert
+    labels:
+      severity: warning
+----
+
+This parameter allows users to configure additional alerting and recording rules.
+All rules defined in this parameter will be added to rule group `mimir-custom.rules`.
+
+
 == `globalNodeSelector`
 
 [horizontal]

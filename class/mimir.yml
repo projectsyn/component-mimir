@@ -36,3 +36,6 @@ parameters:
         - type: jsonnet
           filter: postprocess/fixup-resolver.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/nginx
+        - type: jsonnet
+          filter: postprocess/patch-alerts.jsonnet
+          path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/metamonitoring
