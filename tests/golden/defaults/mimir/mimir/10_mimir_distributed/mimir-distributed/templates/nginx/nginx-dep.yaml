@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.7.2
+    helm.sh/chart: mimir-distributed-4.3.1
   name: mimir-nginx
   namespace: syn-mimir
 spec:
@@ -24,14 +24,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: decb6671cd2cb1b4d2061898c386af74bd1e35c9e3ad4ac950d4b96f25c05a2f
+        checksum/config: ee01ab3d48ceb9dea6979f3c535a62fcab7440d60a66a86011b0435a168bbef1
       labels:
         app.kubernetes.io/component: nginx
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.7.2
+        helm.sh/chart: mimir-distributed-4.3.1
       namespace: syn-mimir
     spec:
       containers:
