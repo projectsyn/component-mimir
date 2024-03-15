@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.11.0
+    helm.sh/chart: mimir-distributed-5.2.3
   name: mimir-nginx
   namespace: syn-mimir
 spec:
@@ -19,19 +19,22 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: decb6671cd2cb1b4d2061898c386af74bd1e35c9e3ad4ac950d4b96f25c05a2f
+        checksum/config: 432b8b49b190aec6543a73c17619ccb78683294da55f3a2f133209134bf1f5d2
       labels:
         app.kubernetes.io/component: nginx
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.11.0
+        helm.sh/chart: mimir-distributed-5.2.3
       namespace: syn-mimir
     spec:
       containers:
@@ -39,7 +42,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.22-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:1.25-alpine
           imagePullPolicy: IfNotPresent
           name: nginx
           ports:
