@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
   name: mimir-alertmanager
   namespace: syn-mimir
 spec:
@@ -24,19 +24,18 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: d7cc002124943a504c792ba298711410d73b0a974b149fc6920c045c425952c1
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/alertmanager-fallback-config: 38b8c4257274dd06d5a8085cee06eefefec23b3e3bf10636cd1a1e42e127ab76
+        checksum/config: d5961a36e8567f1d42d0f6653920b5a04687e7b699ded95dfe988c2e7878daab
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=alertmanager
@@ -46,7 +45,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.12.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
@@ -90,8 +89,6 @@ spec:
               name: tmp
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -101,7 +98,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 60
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:

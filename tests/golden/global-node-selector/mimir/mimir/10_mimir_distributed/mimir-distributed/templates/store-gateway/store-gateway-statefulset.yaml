@@ -2,21 +2,22 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
     name: store-gateway-zone-a
     rollout-group: store-gateway
     zone: zone-a
   name: mimir-store-gateway-zone-a
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -30,32 +31,37 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: d5961a36e8567f1d42d0f6653920b5a04687e7b699ded95dfe988c2e7878daab
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
         name: store-gateway-zone-a
         rollout-group: store-gateway
         zone: zone-a
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=store-gateway
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-a
-          env: null
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1073741824'
+            - name: JAEGER_REPORTER_MAX_QUEUE_SIZE
+              value: '1000'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.12.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -95,7 +101,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -107,7 +112,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 240
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -145,21 +149,22 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
     name: store-gateway-zone-b
     rollout-group: store-gateway
     zone: zone-b
   name: mimir-store-gateway-zone-b
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -173,32 +178,37 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: d5961a36e8567f1d42d0f6653920b5a04687e7b699ded95dfe988c2e7878daab
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
         name: store-gateway-zone-b
         rollout-group: store-gateway
         zone: zone-b
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=store-gateway
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-b
-          env: null
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1073741824'
+            - name: JAEGER_REPORTER_MAX_QUEUE_SIZE
+              value: '1000'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.12.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -238,7 +248,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -250,7 +259,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 240
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -288,21 +296,22 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
     name: store-gateway-zone-c
     rollout-group: store-gateway
     zone: zone-c
   name: mimir-store-gateway-zone-c
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -316,32 +325,37 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: d5961a36e8567f1d42d0f6653920b5a04687e7b699ded95dfe988c2e7878daab
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
         name: store-gateway-zone-c
         rollout-group: store-gateway
         zone: zone-c
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=store-gateway
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-c
-          env: null
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1073741824'
+            - name: JAEGER_REPORTER_MAX_QUEUE_SIZE
+              value: '1000'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.12.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -381,7 +395,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -393,7 +406,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 240
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:

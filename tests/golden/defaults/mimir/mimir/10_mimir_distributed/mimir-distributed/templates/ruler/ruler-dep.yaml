@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
   name: mimir-ruler
   namespace: syn-mimir
 spec:
@@ -28,28 +28,30 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: d5961a36e8567f1d42d0f6653920b5a04687e7b699ded95dfe988c2e7878daab
       labels:
         app.kubernetes.io/component: ruler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=ruler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
+            - -distributor.remote-timeout=10s
+          env:
+            - name: JAEGER_REPORTER_MAX_QUEUE_SIZE
+              value: '1000'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.12.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ruler
@@ -90,8 +92,6 @@ spec:
               subPath: null
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -101,7 +101,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 180
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
