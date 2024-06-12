@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.12.0
+    helm.sh/chart: mimir-distributed-5.3.0
   name: mimir-results-cache
   namespace: syn-mimir
 spec:
@@ -29,16 +29,14 @@ spec:
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.12.0
+        helm.sh/chart: mimir-distributed-5.3.0
     spec:
-      affinity: {}
       containers:
         - args:
             - -m 512
-            - -o
-            - modern
-            - -I 1m
+            - --extended=modern,track_sizes
+            - -I 5m
             - -c 16384
             - -v
             - -u 11211
@@ -46,7 +44,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: memcached:1.6.17-alpine
+          image: memcached:1.6.25-alpine
           imagePullPolicy: IfNotPresent
           name: memcached
           ports:
@@ -67,7 +65,7 @@ spec:
         - args:
             - --memcached.address=localhost:11211
             - --web.listen-address=0.0.0.0:9150
-          image: prom/memcached-exporter:v0.6.0
+          image: prom/memcached-exporter:v0.14.3
           imagePullPolicy: IfNotPresent
           name: exporter
           ports:
@@ -82,8 +80,6 @@ spec:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -93,7 +89,5 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 60
-      tolerations: []
-      topologySpreadConstraints: null
   updateStrategy:
     type: RollingUpdate
