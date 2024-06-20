@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.9.0
+    helm.sh/chart: mimir-distributed-4.5.0
     name: ingester-zone-a
     rollout-group: ingester
     zone: zone-a
@@ -31,15 +31,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 07ae1861da5de26197d90a471a51fff71feedbedee3ff790053a256ce5c90ebc
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.9.0
+        helm.sh/chart: mimir-distributed-4.5.0
         name: ingester-zone-a
         rollout-group: ingester
         zone: zone-a
@@ -56,7 +56,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.9.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -153,8 +153,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.9.0
+    helm.sh/chart: mimir-distributed-4.5.0
     name: ingester-zone-b
     rollout-group: ingester
     zone: zone-b
@@ -175,15 +175,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 07ae1861da5de26197d90a471a51fff71feedbedee3ff790053a256ce5c90ebc
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.9.0
+        helm.sh/chart: mimir-distributed-4.5.0
         name: ingester-zone-b
         rollout-group: ingester
         zone: zone-b
@@ -200,7 +200,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.9.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -297,8 +297,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.9.0
+    helm.sh/chart: mimir-distributed-4.5.0
     name: ingester-zone-c
     rollout-group: ingester
     zone: zone-c
@@ -319,15 +319,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 07ae1861da5de26197d90a471a51fff71feedbedee3ff790053a256ce5c90ebc
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.9.0
+        helm.sh/chart: mimir-distributed-4.5.0
         name: ingester-zone-c
         rollout-group: ingester
         zone: zone-c
@@ -344,7 +344,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.9.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
