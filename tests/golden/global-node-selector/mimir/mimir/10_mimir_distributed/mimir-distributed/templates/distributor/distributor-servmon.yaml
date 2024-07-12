@@ -7,15 +7,16 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.13.0
+    helm.sh/chart: mimir-distributed-5.4.0
   name: mimir-distributor
   namespace: syn-mimir
 spec:
   endpoints:
     - port: http-metrics
       relabelings:
-        - replacement: syn-mimir/distributor
+        - action: replace
+          replacement: syn-mimir/distributor
           sourceLabels:
             - job
           targetLabel: job
