@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/component: results-cache
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.13.0
+    helm.sh/chart: mimir-distributed-5.4.1
+  name: mimir-results-cache
+  namespace: syn-mimir
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: results-cache
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir

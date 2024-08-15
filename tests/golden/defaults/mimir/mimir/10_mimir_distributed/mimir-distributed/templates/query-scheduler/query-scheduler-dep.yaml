@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.13.0
+    helm.sh/chart: mimir-distributed-5.4.1
   name: mimir-query-scheduler
   namespace: syn-mimir
 spec:
@@ -20,35 +20,31 @@ spec:
       app.kubernetes.io/name: mimir
   strategy:
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 297e8952763bcb6530e51fadce57eed69be00c3508d5837263c95d66054098b5
       labels:
         app.kubernetes.io/component: query-scheduler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.13.0
+        helm.sh/chart: mimir-distributed-5.4.1
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=query-scheduler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-            - -server.grpc.keepalive.max-connection-age=2562047h
-            - -server.grpc.keepalive.max-connection-age-grace=2562047h
-          env: null
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.13.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: query-scheduler
@@ -83,8 +79,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -94,7 +88,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 180
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
