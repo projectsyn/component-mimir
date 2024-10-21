@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.14.0
+    helm.sh/chart: mimir-distributed-5.5.1
   name: mimir-alertmanager
   namespace: syn-mimir
 spec:
@@ -24,29 +24,28 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: d7cc002124943a504c792ba298711410d73b0a974b149fc6920c045c425952c1
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/alertmanager-fallback-config: 629ff32ec78f73b5431f1c9f4c1f71d676d2954853e23830ecbd9c36721671a7
+        checksum/config: 04492c1d15f87bfb6a050a79bf38f71b54bcf0d5885a41298f2daf173b2cbf79
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.14.0
+        helm.sh/chart: mimir-distributed-5.5.1
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=alertmanager
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
+            - -server.http-idle-timeout=6m
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.14.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
@@ -90,7 +89,6 @@ spec:
               name: tmp
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -101,8 +99,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 60
-      tolerations: []
+      terminationGracePeriodSeconds: 900
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
