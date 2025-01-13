@@ -20,7 +20,7 @@ parameters:
     globalNodeSelector: {}
 
     charts:
-      mimir-distributed: "4.3.0"
+      mimir-distributed: "4.5.0"
 
     alerts:
       additionalRules: {}
