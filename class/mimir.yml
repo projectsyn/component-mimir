@@ -18,6 +18,10 @@ parameters:
         input_type: jsonnet
         output_path: ${_instance}/
 
+      - input_type: copy
+        input_paths:
+          - ${_base_directory}/component/helmchart-fix/validate.yaml
+        output_path: ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/templates/
       - input_type: helm
         output_type: yaml
         input_paths:
@@ -39,3 +43,6 @@ parameters:
         - type: jsonnet
           filter: postprocess/patch-alerts.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/metamonitoring
+        - type: jsonnet
+          filter: postprocess/fixup-securitycontext.jsonnet
+          path: ${_instance}/10_mimir_distributed/mimir-distributed/charts/rollout_operator/templates
