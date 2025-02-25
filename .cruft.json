@@ -7,7 +7,7 @@
       "name": "mimir",
       "slug": "mimir",
       "parameter_key": "mimir",
-      "test_cases": "defaults global-node-selector",
+      "test_cases": "defaults global-node-selector openshift",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",

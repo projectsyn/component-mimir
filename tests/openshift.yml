@@ -1,0 +1,23 @@
+parameters:
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/v5.5.1/lib/openshift4-monitoring-prom.libsonnet
+        output_path: vendor/lib/prom.libsonnet
+
+  mimir:
+    helm_values:
+      global:
+        dnsService: dns-default
+        dnsNamespace: openshift-dns
+      rbac:
+        type: scc
+        podSecurityContext:
+          fsGroup: null
+          runAsGroup: null
+          runAsUser: null
+      rollout_operator:
+        podSecurityContext:
+          fsGroup: null
+          runAsGroup: null
+          runAsUser: null
