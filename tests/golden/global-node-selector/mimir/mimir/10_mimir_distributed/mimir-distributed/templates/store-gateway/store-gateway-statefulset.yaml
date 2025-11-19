@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.7.2
+    helm.sh/chart: mimir-distributed-4.3.1
     name: store-gateway-zone-a
     rollout-group: store-gateway
     zone: zone-a
@@ -30,15 +30,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 2749997363877ef39f6ac52bcc564677270c8e59c22d9a1791701d9b68c0be3c
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.7.2
+        helm.sh/chart: mimir-distributed-4.3.1
         name: store-gateway-zone-a
         rollout-group: store-gateway
         zone: zone-a
@@ -55,7 +55,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.7.2
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -152,8 +152,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.7.2
+    helm.sh/chart: mimir-distributed-4.3.1
     name: store-gateway-zone-b
     rollout-group: store-gateway
     zone: zone-b
@@ -173,15 +173,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 2749997363877ef39f6ac52bcc564677270c8e59c22d9a1791701d9b68c0be3c
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.7.2
+        helm.sh/chart: mimir-distributed-4.3.1
         name: store-gateway-zone-b
         rollout-group: store-gateway
         zone: zone-b
@@ -198,7 +198,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.7.2
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -295,8 +295,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.7.2
+    helm.sh/chart: mimir-distributed-4.3.1
     name: store-gateway-zone-c
     rollout-group: store-gateway
     zone: zone-c
@@ -316,15 +316,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 2749997363877ef39f6ac52bcc564677270c8e59c22d9a1791701d9b68c0be3c
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.7.2
+        helm.sh/chart: mimir-distributed-4.3.1
         name: store-gateway-zone-c
         rollout-group: store-gateway
         zone: zone-c
@@ -341,7 +341,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.7.2
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
