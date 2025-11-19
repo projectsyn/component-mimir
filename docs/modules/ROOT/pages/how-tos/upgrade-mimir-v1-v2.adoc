@@ -131,15 +131,15 @@ cd ../../..
 +
 [source,bash]
 ----
-kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
-kubectl --as=cluster-admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=system:admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=system:admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
 ----
 
 . Scale down the store-gateway pods
 +
 [source,bash]
 ----
-kubectl scale sts -l app.kubernetes.io/component=store-gateway -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+kubectl scale sts -l app.kubernetes.io/component=store-gateway -n$MIMIR_INSTANCE --replicas=0 --as=system:admin
 ----
 
 . Wait for all store-gateway pods to terminate
@@ -161,7 +161,7 @@ cd ../../..
 +
 [source,bash]
 ----
-kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
+kubectl --as=system:admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
 ----
 
 . Wait for the new store-gateways to become ready
@@ -189,16 +189,16 @@ cd ../../..
 +
 [source,bash]
 ----
-kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
-kubectl --as=cluster-admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=system:admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+kubectl --as=system:admin -n syn patch apps $MIMIR_INSTANCE --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
 ----
 
 . Scale down the traffic to the ingesters
 +
 [source,bash]
 ----
-kubectl scale deploy -l app.kubernetes.io/component=nginx -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
-kubectl scale deploy -l app.kubernetes.io/component=gateway -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+kubectl scale deploy -l app.kubernetes.io/component=nginx -n$MIMIR_INSTANCE --replicas=0 --as=system:admin
+kubectl scale deploy -l app.kubernetes.io/component=gateway -n$MIMIR_INSTANCE --replicas=0 --as=system:admin
 ----
 
 . Wait for all nginx and gateway pods to terminate
@@ -207,7 +207,7 @@ kubectl scale deploy -l app.kubernetes.io/component=gateway -n$MIMIR_INSTANCE --
 +
 [source,bash]
 ----
-kubectl scale sts -l app.kubernetes.io/component=ingester -n$MIMIR_INSTANCE --replicas=0 --as cluster-admin
+kubectl scale sts -l app.kubernetes.io/component=ingester -n$MIMIR_INSTANCE --replicas=0 --as=system:admin
 ----
 
 . Wait for the ingesters to terminate
@@ -231,7 +231,7 @@ cd ../../..
 +
 [source,bash]
 ----
-kubectl --as=cluster-admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
+kubectl --as=system:admin -n syn patch apps root --type=json -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {"automated":{"prune":true,"selfHeal":true}}}]'
 ----
 
 . Wait for the new ingesters to become ready
