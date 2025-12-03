@@ -6,7 +6,7 @@ parameters:
         source: ${mimir:charts:mimir-distributed:source}
         chart_name: mimir-distributed
         version: ${mimir:charts:mimir-distributed:version}
-        output_path: ${_base_directory}/helmcharts/mimir-distributed/v${mimir:charts:mimir-distributed:version}
+        output_path: ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}
 
     compile:
       - input_paths:
@@ -21,7 +21,7 @@ parameters:
       - input_type: helm
         output_type: yaml
         input_paths:
-          - ${_base_directory}/helmcharts/mimir-distributed/v${mimir:charts:mimir-distributed:version}
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}
         output_path: ${_instance}/10_mimir_distributed
         helm_values: ${mimir:helm_values}
         helm_params:
