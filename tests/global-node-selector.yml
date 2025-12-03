@@ -11,9 +11,10 @@ parameters:
         output_path: vendor/lib/prom.libsonnet
 
   mimir:
-    globalNodeSelector:
-      appuio.io/node-class: plus
-    nginx_resolver_override: "172.30.0.10"
+    config:
+      nodeSelector:
+        appuio.io/node-class: plus
+      nginxResolverOverride: "172.30.0.10"
 
     alerts:
       additionalRules:
