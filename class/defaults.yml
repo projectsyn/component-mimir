@@ -20,7 +20,9 @@ parameters:
     globalNodeSelector: {}
 
     charts:
-      mimir-distributed: "4.3.0"
+      mimir-distributed:
+        source: https://grafana.github.io/helm-charts
+        version: v4.3.0
 
     alerts:
       additionalRules: {}

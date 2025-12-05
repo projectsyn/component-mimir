@@ -155,7 +155,9 @@ default::
 +
 [source,yaml]
 ----
-mimir-distributed: "<CURRENT VERSION>"
+mimir-distributed:
+  source: https://grafana.github.io/helm-charts
+  version: '4.3.0'
 ----
 
 Holds the reference to the used version of the charts.
