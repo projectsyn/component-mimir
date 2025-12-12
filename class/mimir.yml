@@ -17,13 +17,20 @@ parameters:
           - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/
-
+      - input_paths:
+          - ${_base_directory}/component/helm.jsonnet
+        input_type: jsonnet
+        output_path: ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/
       - input_type: helm
         output_type: yaml
         input_paths:
           - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}
         output_path: ${_instance}/10_mimir_distributed
         helm_values: ${mimir:helm_values}
+        helm_values_files:
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/${_instance}-components.yaml
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/${_instance}-configs.yaml
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/${_instance}-overrides.yaml
         helm_params:
           name: ${mimir:name}
           namespace: ${mimir:namespace:name}

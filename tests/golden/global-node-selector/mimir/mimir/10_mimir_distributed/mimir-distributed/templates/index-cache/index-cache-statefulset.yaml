@@ -95,6 +95,14 @@ spec:
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 60
       tolerations: []
-      topologySpreadConstraints: null
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: index-cache
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
   updateStrategy:
     type: RollingUpdate

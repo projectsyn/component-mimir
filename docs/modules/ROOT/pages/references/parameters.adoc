@@ -164,6 +164,16 @@ Holds the reference to the used version of the charts.
 See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
 
 
+== `components` and `caches`
+
+[horizontal]
+type:: dict
+default:: https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml]
+
+Holds values for all mimir components and caches.
+This dict is directly applied to the Helm values.
+
+
 == `helm_values`
 
 [horizontal]
