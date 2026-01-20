@@ -18,10 +18,16 @@ parameters:
         input_type: jsonnet
         output_path: ${_instance}/
 
-      - input_type: copy
+      - input_type: external
         input_paths:
-          - ${_base_directory}/component/helmchart-fix/validate.yaml
-        output_path: ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/templates/
+          - ${_base_directory}/run-patch
+        output_path: .
+        args:
+          - -d
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/templates/
+          - -p1
+          - -i
+          - ${_base_directory}/component/helmchart-fix/validate.patch
       - input_type: helm
         output_type: yaml
         input_paths:

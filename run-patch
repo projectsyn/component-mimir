@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Wrapper around `patch` which provides some convenience features
+# 1) The wrapper searches for the `patch` binary in ${PATH}
+#
+set -e
+
+# Kapitan provides a fairly standard PATH variable, we add /opt/homebrew/bin for macOS
+export PATH="${PATH}:/opt/homebrew/bin"
+
+patch=$(which patch) || (>&2 echo "patch not found in ${PATH}"; exit 7)
+
+exec "$patch" "${@}"
