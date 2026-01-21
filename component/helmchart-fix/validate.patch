@@ -1,0 +1,11 @@
+--- a/validate.yaml	2026-01-20 13:09:54.025066136 +0100
++++ b/validate.yaml	2026-01-20 11:44:41.953503344 +0100
+@@ -255,7 +255,7 @@
+
+ {{- if eq .Values.rbac.type "scc" -}}
+ {{- with .Values.rollout_operator.podSecurityContext -}}
+-{{- if or (hasKey . "fsGroup") (hasKey . "runAsGroup") (hasKey . "runAsUser") -}}
++{{- if not (and (empty .fsGroup) (empty .runAsGroup) (empty .runAsUser)) -}}
+ {{- fail "You have selected rbac.type=scc, you must set the values fsGroup, runAsGroup, runAsUser to null in rollout_operator.podSecurityContext" -}}
+ {{- end -}}
+ {{- end -}}

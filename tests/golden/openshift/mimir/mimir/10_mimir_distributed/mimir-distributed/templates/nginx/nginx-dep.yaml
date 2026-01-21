@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: nginx
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.7.1
+    helm.sh/chart: mimir-distributed-4.3.0
+  name: mimir-nginx
+  namespace: syn-mimir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: nginx
+      app.kubernetes.io/instance: mimir
+      app.kubernetes.io/name: mimir
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: b43abeae295f05b3d7d3ad1edf7f3f1a250629e201d712517832f4a514c2049c
+      labels:
+        app.kubernetes.io/component: nginx
+        app.kubernetes.io/instance: mimir
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 2.7.1
+        helm.sh/chart: mimir-distributed-4.3.0
+      namespace: syn-mimir
+    spec:
+      containers:
+        - env: null
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: docker.io/nginxinc/nginx-unprivileged:1.22-alpine
+          imagePullPolicy: IfNotPresent
+          name: nginx
+          ports:
+            - containerPort: 8080
+              name: http-metric
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-metric
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/nginx
+              name: config
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /docker-entrypoint.d
+              name: docker-entrypoint-d-override
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: mimir
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: nginx
+              app.kubernetes.io/instance: mimir
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            name: mimir-nginx
+          name: config
+        - emptyDir: {}
+          name: tmp
+        - emptyDir: {}
+          name: docker-entrypoint-d-override
