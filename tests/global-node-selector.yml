@@ -11,6 +11,50 @@ parameters:
         output_path: vendor/lib/prom.libsonnet
 
   mimir:
+
+    # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
+    # Replicas are taken from the `small.yaml` recommended production values.
+    # See parameters.adoc for links to the upstream sizing guidelines.
+    preset: small
+    components:
+      alertmanager:
+        replicas: 3
+      compactor:
+        persistentVolume:
+          size: 50Gi
+      distributor:
+        replicas: 3
+      ingester:
+        replicas: 4
+      querier:
+        replicas: 2
+      queryFrontend:
+        replicas: 1
+      ruler:
+        replicas: 2
+      storeGateway:
+        replicas: 1
+        persistentVolume:
+          size: 20Gi
+
+    caches:
+      results:
+        replicas: 1
+      chunks:
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 4Gi
+      index:
+        resources:
+          limits:
+            memory: 1500Mi
+          requests:
+            cpu: 500m
+            memory: 1500Mi
+
     globalNodeSelector:
       appuio.io/node-class: plus
     nginx_resolver_override: "172.30.0.10"
