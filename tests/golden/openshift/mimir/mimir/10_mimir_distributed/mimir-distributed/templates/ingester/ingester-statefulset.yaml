@@ -18,7 +18,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -171,7 +171,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -324,7 +324,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester

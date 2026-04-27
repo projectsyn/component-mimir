@@ -55,8 +55,19 @@ parameters:
             cpu: 500m
             memory: 1500Mi
 
-    globalNodeSelector:
-      appuio.io/node-class: plus
+    global:
+      nodeSelector:
+        appuio.io/node-class: plus
+      zoneAwareReplication:
+        enabled: true
+        zones:
+          - name: zone-a
+            nodeSelector: {}
+          - name: zone-b
+            nodeSelector: {}
+          - name: zone-c
+            nodeSelector: {}
+  
     nginx_resolver_override: "172.30.0.10"
 
     alerts:

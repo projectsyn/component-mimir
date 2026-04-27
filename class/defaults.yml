@@ -17,8 +17,6 @@ parameters:
           S3_SECRET_ACCESS_KEY: null
           S3_ENDPOINT: null
 
-    globalNodeSelector: {}
-
     charts:
       mimir-distributed:
         source: https://grafana.github.io/helm-charts
@@ -72,6 +70,12 @@ parameters:
       results:
         enabled: true
 
+    global:
+      nodeSelector: {}
+      zoneAwareReplication:
+        enabled: false
+        zones: []
+
     alerts:
       additionalRules: {}
       patchRules:
@@ -113,37 +117,3 @@ parameters:
               access_key_id: \${S3_ACCESS_KEY_ID}
               endpoint: \${S3_ENDPOINT}
               secret_access_key: \${S3_SECRET_ACCESS_KEY}
-
-      ingester:
-        affinity:
-          podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                    - key: target
-                      operator: In
-                      values:
-                        - ingester
-                topologyKey: 'kubernetes.io/hostname'
-        zoneAwareReplication:
-          # Replicating helm chart default
-          enabled: true
-          zones:
-            - name: zone-a
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-b
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-c
-              nodeSelector: ${mimir:globalNodeSelector}
-
-      store_gateway:
-        zoneAwareReplication:
-          # replicating the helm chart default
-          enabled: true
-          zones:
-            - name: zone-a
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-b
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-c
-              nodeSelector: ${mimir:globalNodeSelector}

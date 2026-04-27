@@ -109,8 +109,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -265,8 +264,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -421,8 +419,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

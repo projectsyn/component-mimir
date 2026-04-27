@@ -51,3 +51,14 @@ parameters:
           requests:
             cpu: 500m
             memory: 1500Mi
+
+    global:
+      zoneAwareReplication:
+        enabled: true
+        zones:
+          - name: zone-a
+            nodeSelector: {}
+          - name: zone-b
+            nodeSelector: {}
+          - name: zone-c
+            nodeSelector: {}

@@ -18,7 +18,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -110,8 +110,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -175,7 +174,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -267,8 +266,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -332,7 +330,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -424,8 +422,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
