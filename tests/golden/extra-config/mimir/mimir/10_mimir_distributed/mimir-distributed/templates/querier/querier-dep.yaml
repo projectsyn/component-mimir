@@ -25,7 +25,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
+        checksum/config: 986355326663cf5318bda914d2d306d1e55a5172bb3fb985619cbfb101956455
       labels:
         app.kubernetes.io/component: querier
         app.kubernetes.io/instance: mimir
@@ -66,10 +66,10 @@ spec:
             initialDelaySeconds: 45
           resources:
             limits:
-              memory: 4Gi
+              memory: 5.6Gi
             requests:
-              cpu: 1
-              memory: 2Gi
+              cpu: 2
+              memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -87,7 +87,8 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector: {}
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

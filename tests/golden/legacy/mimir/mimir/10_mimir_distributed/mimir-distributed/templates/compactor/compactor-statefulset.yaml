@@ -86,7 +86,8 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector: {}
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

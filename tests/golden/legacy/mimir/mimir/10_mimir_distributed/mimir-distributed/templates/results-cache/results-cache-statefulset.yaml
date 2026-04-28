@@ -83,7 +83,8 @@ spec:
                 - ALL
             readOnlyRootFilesystem: true
       initContainers: []
-      nodeSelector: {}
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

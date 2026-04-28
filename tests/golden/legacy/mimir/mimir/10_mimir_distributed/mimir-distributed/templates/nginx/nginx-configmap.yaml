@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  nginx.conf: |
+  nginx.conf: |+
     worker_processes  5;  ## Default: 1
     error_log  /dev/stderr error;
     pid        /tmp/nginx.pid;
@@ -25,7 +25,7 @@ data:
 
       sendfile     on;
       tcp_nopush   on;
-      resolver kube-dns.kube-system.svc.cluster.local;
+      resolver 172.30.0.10;
 
       # Ensure that X-Scope-OrgID is always present, default to the no_auth_tenant for backwards compatibility when multi-tenancy was turned off.
       map $http_x_scope_orgid $ensured_x_scope_orgid {
@@ -109,6 +109,7 @@ data:
         }
       }
     }
+
 kind: ConfigMap
 metadata:
   labels:

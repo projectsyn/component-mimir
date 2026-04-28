@@ -24,7 +24,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
       labels:
         app.kubernetes.io/component: compactor
         app.kubernetes.io/instance: mimir
@@ -66,10 +66,10 @@ spec:
             initialDelaySeconds: 60
           resources:
             limits:
-              memory: 2.1Gi
+              memory: 512Mi
             requests:
-              cpu: 1
-              memory: 1.5Gi
+              cpu: 250m
+              memory: 384Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -128,4 +128,4 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: 2Gi

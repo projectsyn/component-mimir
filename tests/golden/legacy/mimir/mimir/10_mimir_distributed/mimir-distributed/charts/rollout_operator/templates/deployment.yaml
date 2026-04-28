@@ -54,6 +54,8 @@ spec:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

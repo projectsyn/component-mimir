@@ -66,6 +66,8 @@ spec:
               name: tmp
             - mountPath: /docker-entrypoint.d
               name: docker-entrypoint-d-override
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

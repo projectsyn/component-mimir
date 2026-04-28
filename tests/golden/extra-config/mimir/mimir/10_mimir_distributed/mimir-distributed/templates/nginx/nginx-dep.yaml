@@ -52,7 +52,12 @@ spec:
               port: http-metric
             initialDelaySeconds: 15
             timeoutSeconds: 1
-          resources: {}
+          resources:
+            limits:
+              memory: 731Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -66,6 +71,8 @@ spec:
               name: tmp
             - mountPath: /docker-entrypoint.d
               name: docker-entrypoint-d-override
+      nodeSelector:
+        appuio.io/node-class: plus
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

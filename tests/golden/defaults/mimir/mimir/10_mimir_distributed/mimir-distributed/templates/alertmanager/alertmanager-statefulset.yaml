@@ -25,7 +25,7 @@ spec:
       annotations:
         bucketSecretVersion: '0'
         checksum/alertmanager-fallback-config: d7cc002124943a504c792ba298711410d73b0a974b149fc6920c045c425952c1
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: mimir
@@ -67,10 +67,10 @@ spec:
             initialDelaySeconds: 45
           resources:
             limits:
-              memory: 1.4Gi
+              memory: 512Mi
             requests:
-              cpu: 1
-              memory: 1Gi
+              cpu: 250m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
