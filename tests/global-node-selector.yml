@@ -71,8 +71,25 @@ parameters:
             nodeSelector: {}
           - name: zone-c
             nodeSelector: {}
-  
-    nginx_resolver_override: "172.30.0.10"
+      nginxResolverOverride: '172.30.0.10'
+
+    config:
+      tenantFederation: true
+      haTracker: true
+      haLabels:
+        cluster: cluster_id
+        replica: prometheus_replica
+      haStore:
+        type: etcd
+        endpoints:
+          - https://vshn-appuio-mimir-kv-etcd-0.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+          - https://vshn-appuio-mimir-kv-etcd-1.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+          - https://vshn-appuio-mimir-kv-etcd-2.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+        tls_enabled: true
+        tls_insecure_skip_verify: true
+        # (swi): feels wrong but we use the etcd exclusivly for mimir and don't currently have a way to provision other users
+        username: root
+        password: "?{vaultkv:${cluster:tenant}/${cluster:name}/vshn-appuio-mimir-kv/etcd_root_password}"
 
     alerts:
       additionalRules:

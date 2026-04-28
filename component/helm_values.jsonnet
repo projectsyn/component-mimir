@@ -214,34 +214,34 @@ local mimir = com.makeMergeable({
           secret_access_key: '${S3_SECRET_ACCESS_KEY}',
         },
       },
-//       [if params.config.tenantFederation then 'tenant_federation']: {
-//         enabled: params.config.tenantFederation,
-//       },
-//       [if params.config.tenantFederation then 'ruler']: {
-//         tenant_federation: {
-//           enabled: params.config.tenantFederation,
-//         },
-//       },
-//       [if params.config.haTracker then 'limits']: {
-//         accept_ha_samples: true,
-//         ha_cluster_label: params.config.haLabels.cluster,
-//         ha_replica_label: params.config.haLabels.replica,
-//       },
-//       [if params.config.haTracker then 'distributor']: {
-//         ha_tracker: {
-//           enable_ha_tracker: true,
-//           ha_tracker_failover_timeout: '60s',
-//           kvstore: {
-//             // prefix: '%s/' % inv.parameters._instance,  // 👈 TODO: think about that
-//             store: params.config.haStore.type,
-//             [params.config.haStore.type]: {
-//               [obj]: params.config.haStore[obj]
-//               for obj in std.objectFields(params.config.haStore)
-//               if obj != 'type'
-//             },
-//           },
-//         },
-//       },
+      [if params.config.tenantFederation then 'tenant_federation']: {
+        enabled: params.config.tenantFederation,
+      },
+      [if params.config.tenantFederation then 'ruler']: {
+        tenant_federation: {
+          enabled: params.config.tenantFederation,
+        },
+      },
+      [if params.config.haTracker then 'limits']: {
+        accept_ha_samples: true,
+        ha_cluster_label: params.config.haLabels.cluster,
+        ha_replica_label: params.config.haLabels.replica,
+      },
+      [if params.config.haTracker then 'distributor']: {
+        ha_tracker: {
+          enable_ha_tracker: true,
+          ha_tracker_failover_timeout: '60s',
+          kvstore: {
+            // prefix: '%s/' % inv.parameters._instance,  // 👈 TODO: think about that
+            store: params.config.haStore.type,
+            [params.config.haStore.type]: {
+              [obj]: params.config.haStore[obj]
+              for obj in std.objectFields(params.config.haStore)
+              if obj != 'type'
+            },
+          },
+        },
+      },
     },
   },
 });
