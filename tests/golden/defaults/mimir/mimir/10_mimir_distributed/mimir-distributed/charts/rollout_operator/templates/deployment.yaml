@@ -28,7 +28,7 @@ spec:
       containers:
         - args:
             - -kubernetes.namespace=syn-mimir
-          image: grafana/rollout-operator:v0.2.0
+          image: docker.io/grafana/rollout-operator:v0.2.0
           imagePullPolicy: IfNotPresent
           name: rollout-operator
           ports:

@@ -110,46 +110,46 @@ local openshift = if isOpenshift then com.makeMergeable({
   },
 }) else {};
 
-// local images = com.makeMergeable({
-//   image: {
-//     repository: '%(registry)s/%(repository)s' % params.images.mimir,
-//     tag: params.images.mimir.tag,
-//   },
-//   memcached: {
-//     image: {
-//       repository: '%(registry)s/%(repository)s' % params.images.memcached,
-//       tag: params.images.memcached.tag,
-//     },
-//   },
-//   memcachedExporter: {
-//     image: {
-//       repository: '%(registry)s/%(repository)s' % params.images.memcachedExporter,
-//       tag: params.images.memcachedExporter.tag,
-//     },
-//   },
-//   nginx: {
-//     image: {
-//       registry: params.images.nginx.registry,
-//       repository: params.images.nginx.repository,
-//       tag: params.images.nginx.tag,
-//     },
-//   },
-//   gateway: {
-//     nginx: {
-//       image: {
-//         registry: params.images.nginx.registry,
-//         repository: params.images.nginx.repository,
-//         tag: params.images.nginx.tag,
-//       },
-//     },
-//   },
-//   rollout_operator: {
-//     image: {
-//       repository: '%(registry)s/%(repository)s' % params.images.rolloutOperator,
-//       tag: params.images.rolloutOperator.tag,
-//     },
-//   },
-// });
+local images = com.makeMergeable({
+  image: {
+    repository: '%(registry)s/%(repository)s' % params.images.mimir,
+    tag: params.images.mimir.tag,
+  },
+  memcached: {
+    image: {
+      repository: '%(registry)s/%(repository)s' % params.images.memcached,
+      tag: params.images.memcached.tag,
+    },
+  },
+  memcachedExporter: {
+    image: {
+      repository: '%(registry)s/%(repository)s' % params.images.memcachedExporter,
+      tag: params.images.memcachedExporter.tag,
+    },
+  },
+  nginx: {
+    image: {
+      registry: params.images.nginx.registry,
+      repository: params.images.nginx.repository,
+      tag: params.images.nginx.tag,
+    },
+  },
+  gateway: {
+    nginx: {
+      image: {
+        registry: params.images.nginx.registry,
+        repository: params.images.nginx.repository,
+        tag: params.images.nginx.tag,
+      },
+    },
+  },
+  rollout_operator: {
+    image: {
+      repository: '%(registry)s/%(repository)s' % params.images.rolloutOperator,
+      tag: params.images.rolloutOperator.tag,
+    },
+  },
+});
 
 local global = com.makeMergeable({
   //   global: {
@@ -178,7 +178,7 @@ local global = com.makeMergeable({
 });
 
 // Mimir Config
-// local mimir = com.makeMergeable({
+local mimir = com.makeMergeable({
 //   mimir: {
 //     structuredConfig: {
 //       alertmanager_storage: {
@@ -244,11 +244,10 @@ local global = com.makeMergeable({
 //       },
 //     },
 //   },
-// });
+});
 
 {
   ['%s-components' % inv.parameters._instance]: components + caches,
-  //   ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir,
-  ['%s-configs' % inv.parameters._instance]: openshift + global,
+    ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir,
   ['%s-overrides' % inv.parameters._instance]: params.helm_values,
 }
