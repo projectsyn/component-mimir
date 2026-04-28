@@ -6,7 +6,7 @@ local inv = kap.inventory();
 local params = inv.parameters.mimir;
 
 // Prevent selecting a non-existent preset
-assert std.member([ 'none', 'extra-small', 'small' ], params.preset) : 'params.preset must be one of: none, extra-small, small';
+assert std.member([ 'none', 'extra-small', 'small', 'large' ], params.preset) : 'params.preset must be one of: none, extra-small, small, large';
 
 {
   none: {},

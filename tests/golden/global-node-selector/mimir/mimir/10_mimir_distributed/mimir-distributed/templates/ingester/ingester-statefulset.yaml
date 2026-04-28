@@ -18,7 +18,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -31,7 +31,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 986355326663cf5318bda914d2d306d1e55a5172bb3fb985619cbfb101956455
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
@@ -69,7 +69,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -110,8 +110,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -175,7 +174,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -188,7 +187,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 986355326663cf5318bda914d2d306d1e55a5172bb3fb985619cbfb101956455
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
@@ -226,7 +225,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -267,8 +266,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -332,7 +330,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: ingester
@@ -345,7 +343,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 986355326663cf5318bda914d2d306d1e55a5172bb3fb985619cbfb101956455
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
@@ -383,7 +381,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -424,8 +422,7 @@ spec:
             - mountPath: /active-query-tracker
               name: active-queries
       initContainers: []
-      nodeSelector:
-        appuio.io/node-class: plus
+      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001

@@ -1,0 +1,135 @@
+# Overwrite parameters here
+parameters:
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-alert-patching.libsonnet
+        output_path: vendor/lib/alert-patching.libsonnet
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-prom.libsonnet
+        output_path: vendor/lib/prom.libsonnet
+
+  facts:
+    cloud: exoscale
+    region: ch-dk-2
+
+  mimir:
+    images:
+      mimir:
+        tag: latest
+      memcached:
+        tag: latest
+      memcachedExporter:
+        tag: latest
+      nginx:
+        tag: latest
+      rolloutOperator:
+        tag: latest
+
+    preset: small
+    components:
+      alertmanager:
+        replicas: 3
+      compactor:
+        persistentVolume:
+          size: 50Gi
+      distributor:
+        replicas: 3
+      ingester:
+        replicas: 4
+      querier:
+        replicas: 2
+      queryFrontend:
+        replicas: 1
+      ruler:
+        replicas: 2
+      storeGateway:
+        replicas: 1
+        persistentVolume:
+          size: 20Gi
+
+    caches:
+      results:
+        replicas: 1
+      chunks:
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 4Gi
+      index:
+        resources:
+          limits:
+            memory: 1500Mi
+          requests:
+            cpu: 500m
+            memory: 1500Mi
+
+    global:
+      nodeSelector:
+        appuio.io/node-class: plus
+      zoneAwareReplication:
+        enabled: true
+        zones:
+          - name: zone-a
+            nodeSelector: {}
+          - name: zone-b
+            nodeSelector: {}
+          - name: zone-c
+            nodeSelector: {}
+      nginxResolverOverride: '172.30.0.10'
+
+    config:
+      tenantFederation: true
+      haTracker: true
+      haLabels:
+        cluster: cluster_id
+        replica: prometheus_replica
+      haStore:
+        type: etcd
+        endpoints:
+          - https://mimir-kv-etcd-0.mimir-kv-etcd-headless.mimir-kv:2379
+          - https://mimir-kv-etcd-1.mimir-kv-etcd-headless.mimir-kv:2379
+          - https://mimir-kv-etcd-2.mimir-kv-etcd-headless.mimir-kv:2379
+        tls_enabled: true
+        tls_insecure_skip_verify: true
+        username: root
+        password: '?{vaultkv:${cluster:tenant}/${cluster:name}/mimir-kv/etcd_root_password}'
+
+    monitoring: false
+    alerts:
+      additionalRules:
+        "alert:CustomTestAlert":
+          expr: vector(1) == 0
+          for: 1h
+          annotations:
+            summary: Test alert
+          labels:
+            severity: warning
+      patchRules:
+        ignoreNames:
+          - MimirAutoscalerNotActive
+        patches:
+          MimirAutoscalerKedaFailing:
+            expr: |
+              !!!!!!!!!!!!!!!!!! vector(0) > 1
+
+    ingress:
+      enabled: true
+      tls:
+        clusterIssuer: null
+        key: |
+          -----BEGIN PRIVATE KEY-----
+          ...
+          -----END PRIVATE KEY-----
+        cert: |
+          -----BEGIN CERTIFICATE-----
+          ...
+          -----END CERTIFICATE-----
+      url: metrics-receive.example.com
+      labels:
+        custom-label: my-label
+
+    basicAuth:
+      enabled: true

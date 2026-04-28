@@ -2,7 +2,10 @@ parameters:
   kapitan:
     dependencies:
       - type: https
-        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/v5.5.1/lib/openshift4-monitoring-prom.libsonnet
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-alert-patching.libsonnet
+        output_path: vendor/lib/alert-patching.libsonnet
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-prom.libsonnet
         output_path: vendor/lib/prom.libsonnet
 
   facts:
@@ -19,6 +22,10 @@ parameters:
     # See parameters.adoc for links to the upstream sizing guidelines.
     preset: small
     components:
+      nginx:
+        enabled: false
+      gateway:
+        enabled: true
       alertmanager:
         replicas: 3
       compactor:
@@ -56,3 +63,25 @@ parameters:
           requests:
             cpu: 500m
             memory: 1500Mi
+
+    global:
+      zoneAwareReplication:
+        enabled: true
+        zones:
+          - name: zone-a
+            nodeSelector: {}
+          - name: zone-b
+            nodeSelector: {}
+          - name: zone-c
+            nodeSelector: {}
+
+    ingress:
+      enabled: true
+      url: metrics-receive.example.com
+
+    basicAuth:
+      enabled: true
+      htpasswd: null
+      existingSecret: the-secret
+
+    monitoring: false

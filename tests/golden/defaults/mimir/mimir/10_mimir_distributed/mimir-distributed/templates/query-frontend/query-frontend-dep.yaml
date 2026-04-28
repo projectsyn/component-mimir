@@ -24,7 +24,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
       labels:
         app.kubernetes.io/component: query-frontend
         app.kubernetes.io/instance: mimir
@@ -44,7 +44,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: query-frontend
@@ -62,10 +62,10 @@ spec:
             initialDelaySeconds: 45
           resources:
             limits:
-              memory: 2.8Gi
-            requests:
-              cpu: 2
               memory: 2Gi
+            requests:
+              cpu: 1
+              memory: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

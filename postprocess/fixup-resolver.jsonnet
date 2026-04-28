@@ -3,7 +3,7 @@ local inv = com.inventory();
 local params = inv.parameters.mimir;
 
 local dir = std.extVar('output_path');
-local override = params.nginx_resolver_override;
+local override = std.get(params, 'nginx_resolver_override', params.global.nginxResolverOverride);
 
 // overrides the nginx resolver with the value of the parameter
 local fix = function(o)
@@ -24,4 +24,4 @@ local fix = function(o)
   else
     o;
 
-com.fixupDir(dir, fix)
+if params.components.nginx.enabled then com.fixupDir(dir, fix) else {}

@@ -1,0 +1,28 @@
+= Upgrade component version v3 to v4
+
+Version 4.x is a major overhaul of the configuration parameters of the component,
+https://github.com/projectsyn/component-mimir/releases/tag/v4.0.0[see Release Notes] for more details.
+
+The component has lots of options to configure each part of the Mimir installation.
+Please have a look at the xref:references/parameters.adoc[parameters documentation] for reference.
+
+
+== Explanation of configuration changes
+
+=== legacy `globalNodeSelector`
+
+The values for the global node selector has moved to `global.nodeSelector`.
+
+[TIP]
+====
+This change is backward compatible, but migrating the values to the new structure is recommended.
+====
+
+=== legacy `nginx_resolver_override`
+
+The values for the nginx dns resolver override has moved to `global.nginxResolverOverride`.
+
+[TIP]
+====
+This change is backward compatible, but migrating the values to the new structure is recommended.
+====

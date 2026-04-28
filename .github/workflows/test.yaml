@@ -33,8 +33,11 @@ jobs:
       matrix:
         instance:
           - defaults
-          - global-node-selector
           - openshift
+          - legacy
+          - extra-config
+          - preset-small
+          - preset-large
     defaults:
       run:
         working-directory: ${{ env.COMPONENT_NAME }}
@@ -50,8 +53,11 @@ jobs:
       matrix:
         instance:
           - defaults
-          - global-node-selector
           - openshift
+          - legacy
+          - extra-config
+          - preset-small
+          - preset-large
     defaults:
       run:
         working-directory: ${{ env.COMPONENT_NAME }}

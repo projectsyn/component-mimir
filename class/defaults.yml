@@ -10,19 +10,27 @@ parameters:
       create: true
       metadata: {}
 
-    secrets:
-      mimir-bucket-secret:
-        stringData:
-          S3_ACCESS_KEY_ID: null
-          S3_SECRET_ACCESS_KEY: null
-          S3_ENDPOINT: null
-
-    globalNodeSelector: {}
-
     charts:
       mimir-distributed:
         source: https://grafana.github.io/helm-charts
         version: v4.3.0
+
+    images:
+      mimir:
+        registry: docker.io
+        repository: grafana/mimir
+      memcached:
+        registry: docker.io
+        repository: library/memcached
+      memcachedExporter:
+        registry: docker.io
+        repository: prom/memcached-exporter
+      nginx:
+        registry: docker.io
+        repository: nginxinc/nginx-unprivileged
+      rolloutOperator:
+        registry: docker.io
+        repository: grafana/rollout-operator
 
     preset: extra-small
 
@@ -72,78 +80,54 @@ parameters:
       results:
         enabled: true
 
+    global:
+      nodeSelector: {}
+      zoneAwareReplication:
+        enabled: false
+        zones: []
+      # Allows overriding the resolver for the mimir-distributed chart, if using nginx as the frontend.
+      nginxResolverOverride: ''
+
+    s3:
+      bucketPrefix: ${_instance}
+      endpoint: null
+      region: null
+      insecure: false
+      auth:
+        accessKeyId: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/s3_access_key}'
+        secretAccessKey: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/s3_secret_key}'
+        #increase if auth credentials change
+        secretVersion: 0
+
+    ingress:
+      enabled: false
+      tls:
+        enabled: true
+        clusterIssuer: 'letsencrypt-production'
+        key: null
+        cert: null
+      url: ''
+
+    basicAuth:
+      enabled: false
+      htpasswd: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/htpasswd}'
+
+    config:
+      tenantFederation: false
+      haTracker: false
+      haLabels:
+        cluster: cluster_id
+        replica: prometheus_replica
+      haStore:
+        type: etcd
+
+    monitoring: true
     alerts:
       additionalRules: {}
       patchRules:
         ignoreNames: []
         patches: {}
 
-    # Allows overriding the resolver for the mimir-distributed chart, if using nginx as the frontend.
-    nginx_resolver_override: ""
+    secrets: {}
 
-    helm_values:
-      global:
-        extraEnvFrom:
-          - secretRef:
-              name: mimir-bucket-secret
-        podAnnotations:
-          # increase if bucket secrets change
-          bucketSecretVersion: "0"
-
-      mimir:
-        structuredConfig:
-          alertmanager_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-alertmanager-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
-          blocks_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-blocks-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
-          ruler_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-ruler-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
-
-      ingester:
-        affinity:
-          podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                    - key: target
-                      operator: In
-                      values:
-                        - ingester
-                topologyKey: 'kubernetes.io/hostname'
-        zoneAwareReplication:
-          # Replicating helm chart default
-          enabled: true
-          zones:
-            - name: zone-a
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-b
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-c
-              nodeSelector: ${mimir:globalNodeSelector}
-
-      store_gateway:
-        zoneAwareReplication:
-          # replicating the helm chart default
-          enabled: true
-          zones:
-            - name: zone-a
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-b
-              nodeSelector: ${mimir:globalNodeSelector}
-            - name: zone-c
-              nodeSelector: ${mimir:globalNodeSelector}
+    helm_values: {}

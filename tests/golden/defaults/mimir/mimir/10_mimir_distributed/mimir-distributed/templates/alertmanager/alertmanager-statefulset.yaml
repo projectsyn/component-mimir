@@ -25,7 +25,7 @@ spec:
       annotations:
         bucketSecretVersion: '0'
         checksum/alertmanager-fallback-config: d7cc002124943a504c792ba298711410d73b0a974b149fc6920c045c425952c1
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: mimir
@@ -46,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.7.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
@@ -67,10 +67,10 @@ spec:
             initialDelaySeconds: 45
           resources:
             limits:
-              memory: 1.4Gi
+              memory: 512Mi
             requests:
-              cpu: 1
-              memory: 1Gi
+              cpu: 250m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
