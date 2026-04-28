@@ -10,7 +10,14 @@ local prom = import 'lib/prom.libsonnet';
 local params = inv.parameters.mimir;
 
 local secrets = com.generateResources(
-  params.secrets,
+  {
+    'mimir-bucket-secret': {
+      stringData: {
+        S3_ACCESS_KEY_ID: params.s3.auth.accessKeyId,
+        S3_SECRET_ACCESS_KEY: params.s3.auth.secretAccessKey,
+      },
+    },
+  } + com.makeMergeable(params.secrets),
   function(name) kube.Secret(name) {
     metadata+: {
       namespace: params.namespace.name,

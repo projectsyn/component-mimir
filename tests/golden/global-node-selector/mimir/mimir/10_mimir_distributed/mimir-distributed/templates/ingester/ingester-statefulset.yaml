@@ -31,7 +31,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 3ec7e2a8cac2b30438b6960b211e33764a42b5612330e18366c057e708159f35
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
@@ -187,7 +187,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 3ec7e2a8cac2b30438b6960b211e33764a42b5612330e18366c057e708159f35
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
@@ -343,7 +343,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 3ec7e2a8cac2b30438b6960b211e33764a42b5612330e18366c057e708159f35
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir

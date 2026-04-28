@@ -152,16 +152,16 @@ local images = com.makeMergeable({
 });
 
 local global = com.makeMergeable({
-  //   global: {
-  //     extraEnvFrom: [ {
-  //       secretRef: {
-  //         name: 'mimir-bucket-secret',
-  //       },
-  //     } ],
-  //     podAnnotations: {
-  //       bucketSecretVersion: '%s' % params.s3.auth.secretVersion,
-  //     },
-  //   },
+    global: {
+      extraEnvFrom: [ {
+        secretRef: {
+          name: 'mimir-bucket-secret',
+        },
+      } ],
+      podAnnotations: {
+        bucketSecretVersion: '%s' % params.s3.auth.secretVersion,
+      },
+    },
   minio: {
     enabled: false,
   },
@@ -179,41 +179,41 @@ local global = com.makeMergeable({
 
 // Mimir Config
 local mimir = com.makeMergeable({
-//   mimir: {
-//     structuredConfig: {
-//       alertmanager_storage: {
-//         backend: 's3',
-//         s3: {
-//           bucket_name: '%s-alertmanager-bucket' % params.s3.bucketPrefix,
-//           endpoint: s3endpoint,
-//           [if params.s3.region != null then 'region']: params.s3.region,
-//           [if params.s3.insecure then 'insecure']: true,
-//           access_key_id: '${S3_ACCESS_KEY_ID}',
-//           secret_access_key: '${S3_SECRET_ACCESS_KEY}',
-//         },
-//       },
-//       blocks_storage: {
-//         backend: 's3',
-//         s3: {
-//           bucket_name: '%s-blocks-bucket' % params.s3.bucketPrefix,
-//           endpoint: s3endpoint,
-//           [if params.s3.region != null then 'region']: params.s3.region,
-//           [if params.s3.insecure then 'insecure']: true,
-//           access_key_id: '${S3_ACCESS_KEY_ID}',
-//           secret_access_key: '${S3_SECRET_ACCESS_KEY}',
-//         },
-//       },
-//       ruler_storage: {
-//         backend: 's3',
-//         s3: {
-//           bucket_name: '%s-ruler-bucket' % params.s3.bucketPrefix,
-//           endpoint: s3endpoint,
-//           [if params.s3.region != null then 'region']: params.s3.region,
-//           [if params.s3.insecure then 'insecure']: true,
-//           access_key_id: '${S3_ACCESS_KEY_ID}',
-//           secret_access_key: '${S3_SECRET_ACCESS_KEY}',
-//         },
-//       },
+  mimir: {
+    structuredConfig: {
+      alertmanager_storage: {
+        backend: 's3',
+        s3: {
+          bucket_name: '%s-alertmanager-bucket' % params.s3.bucketPrefix,
+          endpoint: s3endpoint,
+          [if params.s3.region != null then 'region']: params.s3.region,
+          [if params.s3.insecure then 'insecure']: true,
+          access_key_id: '${S3_ACCESS_KEY_ID}',
+          secret_access_key: '${S3_SECRET_ACCESS_KEY}',
+        },
+      },
+      blocks_storage: {
+        backend: 's3',
+        s3: {
+          bucket_name: '%s-blocks-bucket' % params.s3.bucketPrefix,
+          endpoint: s3endpoint,
+          [if params.s3.region != null then 'region']: params.s3.region,
+          [if params.s3.insecure then 'insecure']: true,
+          access_key_id: '${S3_ACCESS_KEY_ID}',
+          secret_access_key: '${S3_SECRET_ACCESS_KEY}',
+        },
+      },
+      ruler_storage: {
+        backend: 's3',
+        s3: {
+          bucket_name: '%s-ruler-bucket' % params.s3.bucketPrefix,
+          endpoint: s3endpoint,
+          [if params.s3.region != null then 'region']: params.s3.region,
+          [if params.s3.insecure then 'insecure']: true,
+          access_key_id: '${S3_ACCESS_KEY_ID}',
+          secret_access_key: '${S3_SECRET_ACCESS_KEY}',
+        },
+      },
 //       [if params.config.tenantFederation then 'tenant_federation']: {
 //         enabled: params.config.tenantFederation,
 //       },
@@ -242,12 +242,12 @@ local mimir = com.makeMergeable({
 //           },
 //         },
 //       },
-//     },
-//   },
+    },
+  },
 });
 
 {
   ['%s-components' % inv.parameters._instance]: components + caches,
-    ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir,
+  ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir,
   ['%s-overrides' % inv.parameters._instance]: params.helm_values,
 }

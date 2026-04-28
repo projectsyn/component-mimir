@@ -27,7 +27,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6c6481e85996c18964e926efa4714f8a0730c55921d824719ba3f616ce18dc35
+        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
       labels:
         app.kubernetes.io/component: query-scheduler
         app.kubernetes.io/instance: mimir

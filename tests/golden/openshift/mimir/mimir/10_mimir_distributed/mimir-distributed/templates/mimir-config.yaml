@@ -14,7 +14,7 @@ data:
       s3:
         access_key_id: ${S3_ACCESS_KEY_ID}
         bucket_name: mimir-alertmanager-bucket
-        endpoint: ${S3_ENDPOINT}
+        endpoint: objects.rma.cloudscale.ch
         secret_access_key: ${S3_SECRET_ACCESS_KEY}
     blocks_storage:
       backend: s3
@@ -40,7 +40,7 @@ data:
       s3:
         access_key_id: ${S3_ACCESS_KEY_ID}
         bucket_name: mimir-blocks-bucket
-        endpoint: ${S3_ENDPOINT}
+        endpoint: objects.rma.cloudscale.ch
         secret_access_key: ${S3_SECRET_ACCESS_KEY}
       tsdb:
         dir: /data/tsdb
@@ -100,7 +100,7 @@ data:
       s3:
         access_key_id: ${S3_ACCESS_KEY_ID}
         bucket_name: mimir-ruler-bucket
-        endpoint: ${S3_ENDPOINT}
+        endpoint: objects.rma.cloudscale.ch
         secret_access_key: ${S3_SECRET_ACCESS_KEY}
     runtime_config:
       file: /var/mimir/runtime.yaml

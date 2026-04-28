@@ -10,13 +10,6 @@ parameters:
       create: true
       metadata: {}
 
-    secrets:
-      mimir-bucket-secret:
-        stringData:
-          S3_ACCESS_KEY_ID: null
-          S3_SECRET_ACCESS_KEY: null
-          S3_ENDPOINT: null
-
     charts:
       mimir-distributed:
         source: https://grafana.github.io/helm-charts
@@ -98,44 +91,58 @@ parameters:
         enabled: false
         zones: []
 
+    s3:
+      bucketPrefix: ${_instance}
+      endpoint: null
+      region: null
+      insecure: false
+      auth:
+        accessKeyId: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/s3_access_key}'
+        secretAccessKey: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/s3_secret_key}'
+        #increase if auth credentials change
+        secretVersion: 0
+
+    monitoring: true
     alerts:
       additionalRules: {}
       patchRules:
         ignoreNames: []
         patches: {}
 
+    secrets: {}
+
     # Allows overriding the resolver for the mimir-distributed chart, if using nginx as the frontend.
     nginx_resolver_override: ""
 
     helm_values:
-      global:
-        extraEnvFrom:
-          - secretRef:
-              name: mimir-bucket-secret
-        podAnnotations:
-          # increase if bucket secrets change
-          bucketSecretVersion: "0"
+      # global:
+      #   extraEnvFrom:
+      #     - secretRef:
+      #         name: mimir-bucket-secret
+      #   podAnnotations:
+      #     # increase if bucket secrets change
+      #     bucketSecretVersion: "0"
 
-      mimir:
-        structuredConfig:
-          alertmanager_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-alertmanager-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
-          blocks_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-blocks-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
-          ruler_storage:
-            backend: s3
-            s3:
-              bucket_name: ${mimir:name}-ruler-bucket
-              access_key_id: \${S3_ACCESS_KEY_ID}
-              endpoint: \${S3_ENDPOINT}
-              secret_access_key: \${S3_SECRET_ACCESS_KEY}
+      # mimir:
+      #   structuredConfig:
+      #     alertmanager_storage:
+      #       backend: s3
+      #       s3:
+      #         bucket_name: ${mimir:name}-alertmanager-bucket
+      #         access_key_id: \${S3_ACCESS_KEY_ID}
+      #         endpoint: \${S3_ENDPOINT}
+      #         secret_access_key: \${S3_SECRET_ACCESS_KEY}
+      #     blocks_storage:
+      #       backend: s3
+      #       s3:
+      #         bucket_name: ${mimir:name}-blocks-bucket
+      #         access_key_id: \${S3_ACCESS_KEY_ID}
+      #         endpoint: \${S3_ENDPOINT}
+      #         secret_access_key: \${S3_SECRET_ACCESS_KEY}
+      #     ruler_storage:
+      #       backend: s3
+      #       s3:
+      #         bucket_name: ${mimir:name}-ruler-bucket
+      #         access_key_id: \${S3_ACCESS_KEY_ID}
+      #         endpoint: \${S3_ENDPOINT}
+      #         secret_access_key: \${S3_SECRET_ACCESS_KEY}

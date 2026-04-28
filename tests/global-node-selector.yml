@@ -10,6 +10,10 @@ parameters:
         source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/v5.5.1/lib/openshift4-monitoring-prom.libsonnet
         output_path: vendor/lib/prom.libsonnet
 
+  facts:
+    cloud: exoscale
+    region: ch-dk-2
+
   mimir:
 
     # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
