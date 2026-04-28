@@ -44,7 +44,20 @@ spec:
         zone: zone-a
       namespace: syn-mimir
     spec:
-      affinity: {}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: rollout-group
+                    operator: In
+                    values:
+                      - store-gateway
+                  - key: app.kubernetes.io/component
+                    operator: NotIn
+                    values:
+                      - store-gateway-zone-a
+              topologyKey: kubernetes.io/hostname
       containers:
         - args:
             - -target=store-gateway
@@ -186,7 +199,20 @@ spec:
         zone: zone-b
       namespace: syn-mimir
     spec:
-      affinity: {}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: rollout-group
+                    operator: In
+                    values:
+                      - store-gateway
+                  - key: app.kubernetes.io/component
+                    operator: NotIn
+                    values:
+                      - store-gateway-zone-b
+              topologyKey: kubernetes.io/hostname
       containers:
         - args:
             - -target=store-gateway
@@ -328,7 +354,20 @@ spec:
         zone: zone-c
       namespace: syn-mimir
     spec:
-      affinity: {}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: rollout-group
+                    operator: In
+                    values:
+                      - store-gateway
+                  - key: app.kubernetes.io/component
+                    operator: NotIn
+                    values:
+                      - store-gateway-zone-c
+              topologyKey: kubernetes.io/hostname
       containers:
         - args:
             - -target=store-gateway

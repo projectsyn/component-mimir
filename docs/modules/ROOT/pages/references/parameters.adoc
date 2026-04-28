@@ -34,6 +34,310 @@ example:: `{"labels": {"organization": "bar"}}`
 Additional metadata to add to the namespace.
 
 
+== `charts`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+mimir-distributed:
+  source: https://grafana.github.io/helm-charts
+  version: '4.3.0'
+----
+
+Holds the reference to the used version of the charts.
+See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
+
+
+== `preset`
+
+[horizontal]
+type:: string
+default:: `small`
+
+Choose a preset for scaling the Mimir components.
+
+Available options: none, extra-small, small, large.
+
+
+== `components`
+
+Configuration of the different Mimir components.
+
+[INFO]
+----
+The values of each component reflect the corresponding sections in the Helm charts `values.yaml` file.
+----
+
+Read path: querier, queryFrontend, queryScheduler, storeGateway.
+Write path: distributor, ingester.
+Backend: compactor, rolloutOperator.
+Ingress: nginx, gateway.
+Optional: alertmanager, overridesExporter, ruler.
+
+=== `components.querier`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  querier:
+    enabled: true
+----
+
+The querier is a stateless component that evaluates PromQL expressions by fetching time series and labels on the read path.
+
+The querier uses the store-gateway component to query the long-term storage and the ingester component to query recently written data.
+
+=== `components.queryFrontend`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  queryFrontend:
+    enabled: true
+----
+
+The query-frontend is a stateless component that provides a Prometheus compatible API with a number of features to accelerate the read path.
+The query-frontend is the primary entry point for the read path of Mimir.
+The query-scheduler and queriers are required within the cluster to execute the queries.
+
+We recommend that you run at least two query-frontend replicas for high-availability reasons.
+
+=== `components.queryScheduler`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  queryScheduler:
+    enabled: true
+----
+
+The query-scheduler is stateless component that retains a queue of queries to execute, and distributes the workload to available queriers.
+
+=== `components.storeGateway`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  storeGateway:
+    enabled: true
+    storage: {}
+----
+
+The store-gateway component, which is stateful, queries blocks from long-term storage.
+On the read path, the querier and the ruler use the store-gateway when handling the query, whether the query comes from a user or from when a rule is being evaluated.
+
+
+=== `components.distributor`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  distributor:
+    enabled: true
+----
+
+The distributor is a stateless component that acts as the entry point for the Grafana Mimir write path.
+It receives incoming write requests containing time series data, validates the data for correctness, enforces tenant-specific limits, and then ingests the data into Mimir.
+
+=== `components.ingester`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  ingester:
+    enabled: true
+    storage: {}
+----
+
+The ingester is a stateful component that processes the most recently ingested samples and makes them available for querying.
+Queriers read recent data from ingesters and older data from long-term object storage via store-gateways.
+
+
+=== `components.compactor`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  compactor:
+    enabled: true
+----
+
+The compactor increases query performance and reduces long-term storage usage by combining blocks.
+
+Compacting multiple blocks of a given tenant into a single, optimized larger block.
+This deduplicates chunks and reduces the size of the index, resulting in reduced storage costs.
+Querying fewer blocks is faster, so it also increases query speed.
+
+=== `components.rolloutOperator`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  rolloutOperator:
+    enabled: true
+----
+
+
+=== `components.alertmanager`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  alertmanager:
+    enabled: true
+      overridesExporter:
+        enabled: true
+      ruler:
+        enabled: true
+----
+
+The Mimir Alertmanager adds multi-tenancy support and horizontal scalability to the Prometheus Alertmanager.
+The Mimir Alertmanager is an optional component that accepts alert notifications from the Mimir ruler.
+
+=== `components.overridesExporter`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  overridesExporter:
+    enabled: true
+----
+
+Grafana Mimir supports applying overrides on a per-tenant basis.
+A number of overrides configure limits that prevent a single tenant from using too many resources.
+The overrides-exporter component exposes limits as Prometheus metrics so that operators can understand how close tenants are to their limits.
+
+=== `components.ruler`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  ruler:
+    enabled: true
+----
+
+The ruler is an optional component that evaluates PromQL expressions defined in recording and alerting rules.
+Each tenant has a set of recording and alerting rules and can group those rules into namespaces.
+
+
+== `caches`
+
+Configuration of the cache components of Mimir.
+Caching is optional, but highly recommended in a production environment.
+
+[INFO]
+----
+The values of each component reflect the corresponding sections in the Helm charts `values.yaml` file.
+----
+
+=== `caches.chunks`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+caches:
+  chunks:
+    enabled: true
+----
+
+The store-gateway can also use a cache to store chunks that are fetched from long-term storage.
+Chunks contain actual samples, and can be reused if a query hits the same series for the same time range.
+
+=== `caches.index`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+caches:
+  index:
+    enabled: true
+----
+
+The store-gateway can use the index cache to accelerate series and label lookups from block indexes.
+
+=== `caches.metadata`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+caches:
+  metadata:
+    enabled: true
+----
+
+Using the metadata cache reduces the number of API calls to long-term storage and stops the number of the API calls that scale linearly with the number of querier and store-gateway replicas.
+
+=== `caches.results`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+caches:
+  results:
+    enabled: true
+----
+
+The results cache stores the results for index-stat, instant-metric, label and volume queries and it supports negative caching for log queries.
+
 == `secrets`
 
 [horizontal]
@@ -145,23 +449,6 @@ example:: `"172.30.0.10"`
 
 If set, the nginx resolver is set to this value.
 This can be used to insert the static IP of the cluster DNS server, which will fix the case when the resolved DNS service IP changes, but nginx keeps the old IP.
-
-
-== `charts`
-
-[horizontal]
-type:: dict
-default::
-+
-[source,yaml]
-----
-mimir-distributed:
-  source: https://grafana.github.io/helm-charts
-  version: '4.3.0'
-----
-
-Holds the reference to the used version of the charts.
-See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
 
 
 == `helm_values`
