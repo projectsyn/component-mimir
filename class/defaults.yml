@@ -19,23 +19,18 @@ parameters:
       mimir:
         registry: docker.io
         repository: grafana/mimir
-        tag: 2.7.1
       memcached:
         registry: docker.io
         repository: library/memcached
-        tag: 1.6.17-alpine
       memcachedExporter:
         registry: docker.io
         repository: prom/memcached-exporter
-        tag: v0.6.0
       nginx:
         registry: docker.io
         repository: nginxinc/nginx-unprivileged
-        tag: 1.22-alpine
       rolloutOperator:
         registry: docker.io
         repository: grafana/rollout-operator
-        tag: v0.2.0
 
     preset: extra-small
 

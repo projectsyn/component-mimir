@@ -14,6 +14,18 @@ parameters:
     region: ch-dk-2
 
   mimir:
+    images:
+      mimir:
+        tag: latest
+      memcached:
+        tag: latest
+      memcachedExporter:
+        tag: latest
+      nginx:
+        tag: latest
+      rolloutOperator:
+        tag: latest
+
     preset: small
     components:
       alertmanager:

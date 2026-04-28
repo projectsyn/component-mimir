@@ -39,7 +39,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.22-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:latest
           imagePullPolicy: IfNotPresent
           name: nginx
           ports:

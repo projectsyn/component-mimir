@@ -113,25 +113,25 @@ local openshift = if isOpenshift then com.makeMergeable({
 local images = com.makeMergeable({
   image: {
     repository: '%(registry)s/%(repository)s' % params.images.mimir,
-    tag: params.images.mimir.tag,
+    [if std.objectHas(params.images.mimir, 'tag') then 'tag']: params.images.mimir.tag,
   },
   memcached: {
     image: {
       repository: '%(registry)s/%(repository)s' % params.images.memcached,
-      tag: params.images.memcached.tag,
+      [if std.objectHas(params.images.memcached, 'tag') then 'tag']: params.images.memcached.tag,
     },
   },
   memcachedExporter: {
     image: {
       repository: '%(registry)s/%(repository)s' % params.images.memcachedExporter,
-      tag: params.images.memcachedExporter.tag,
+      [if std.objectHas(params.images.memcachedExporter, 'tag') then 'tag']: params.images.memcachedExporter.tag,
     },
   },
   nginx: {
     image: {
       registry: params.images.nginx.registry,
       repository: params.images.nginx.repository,
-      tag: params.images.nginx.tag,
+      [if std.objectHas(params.images.nginx, 'tag') then 'tag']: params.images.nginx.tag,
     },
   },
   gateway: {
@@ -139,14 +139,14 @@ local images = com.makeMergeable({
       image: {
         registry: params.images.nginx.registry,
         repository: params.images.nginx.repository,
-        tag: params.images.nginx.tag,
+        [if std.objectHas(params.images.nginx, 'tag') then 'tag']: params.images.nginx.tag,
       },
     },
   },
   rollout_operator: {
     image: {
       repository: '%(registry)s/%(repository)s' % params.images.rolloutOperator,
-      tag: params.images.rolloutOperator.tag,
+      [if std.objectHas(params.images.rolloutOperator, 'tag') then 'tag']: params.images.rolloutOperator.tag,
     },
   },
 });

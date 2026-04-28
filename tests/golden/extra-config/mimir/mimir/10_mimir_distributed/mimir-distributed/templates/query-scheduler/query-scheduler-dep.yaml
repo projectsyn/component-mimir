@@ -48,7 +48,7 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:latest
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: query-scheduler

@@ -51,6 +51,57 @@ Holds the reference to the used version of the charts.
 See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
 
 
+== `images`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+images:
+  mimir:
+    registry: docker.io
+    repository: grafana/mimir
+  memcached:
+    registry: docker.io
+    repository: library/memcached
+  memcachedExporter:
+    registry: docker.io
+    repository: prom/memcached-exporter
+  nginx:
+    registry: docker.io
+    repository: nginxinc/nginx-unprivileged
+  rolloutOperator:
+    registry: docker.io
+    repository: grafana/rollout-operator
+----
+example::
++
+[source,yaml]
+----
+images:
+  mimir:
+    registry: my-docker-cache.example.org
+    tag: latest
+  memcached:
+    tag: latest
+  memcachedExporter:
+    tag: latest
+  nginx:
+    tag: latest
+  rolloutOperator:
+    tag: latest
+----
+
+Configures the image registry, repository and tag.
+
+[INFO]
+----
+If the `tag` parameter is not set, the one from the Helm chart will be used.
+----
+
+
 == `preset`
 
 [horizontal]
