@@ -1,0 +1,108 @@
+# Overwrite parameters here
+parameters:
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-alert-patching.libsonnet
+        output_path: vendor/lib/alert-patching.libsonnet
+      - type: https
+        source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-prom.libsonnet
+        output_path: vendor/lib/prom.libsonnet
+
+  # facts:
+  #   cloud: exoscale
+  #   region: ch-dk-2
+
+  # mimir:
+  #   # The defaults are close to the upstream defaults, with HA enabled, and the bucket secret added.
+  #   # Replicas are taken from the `small.yaml` recommended production values.
+  #   # See parameters.adoc for links to the upstream sizing guidelines.
+  #   preset: small
+  #   components:
+  #     alertmanager:
+  #       replicas: 3
+  #     compactor:
+  #       persistentVolume:
+  #         size: 50Gi
+  #     distributor:
+  #       replicas: 3
+  #     ingester:
+  #       replicas: 4
+  #     querier:
+  #       replicas: 2
+  #     queryFrontend:
+  #       replicas: 1
+  #     ruler:
+  #       replicas: 2
+  #     storeGateway:
+  #       replicas: 1
+  #       persistentVolume:
+  #         size: 20Gi
+
+  #   caches:
+  #     results:
+  #       replicas: 1
+  #     chunks:
+  #       resources:
+  #         limits:
+  #           memory: 4Gi
+  #         requests:
+  #           cpu: 500m
+  #           memory: 4Gi
+  #     index:
+  #       resources:
+  #         limits:
+  #           memory: 1500Mi
+  #         requests:
+  #           cpu: 500m
+  #           memory: 1500Mi
+
+  #   global:
+  #     nodeSelector:
+  #       appuio.io/node-class: plus
+  #     zoneAwareReplication:
+  #       enabled: true
+  #       zones:
+  #         - name: zone-a
+  #           nodeSelector: {}
+  #         - name: zone-b
+  #           nodeSelector: {}
+  #         - name: zone-c
+  #           nodeSelector: {}
+  #     nginxResolverOverride: '172.30.0.10'
+
+  #   config:
+  #     tenantFederation: true
+  #     haTracker: true
+  #     haLabels:
+  #       cluster: cluster_id
+  #       replica: prometheus_replica
+  #     haStore:
+  #       type: etcd
+  #       endpoints:
+  #         - https://vshn-appuio-mimir-kv-etcd-0.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+  #         - https://vshn-appuio-mimir-kv-etcd-1.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+  #         - https://vshn-appuio-mimir-kv-etcd-2.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+  #       tls_enabled: true
+  #       tls_insecure_skip_verify: true
+  #       # (swi): feels wrong but we use the etcd exclusivly for mimir and don't currently have a way to provision other users
+  #       username: root
+  #       password: "?{vaultkv:${cluster:tenant}/${cluster:name}/vshn-appuio-mimir-kv/etcd_root_password}"
+
+  #   monitoring: false
+  #   alerts:
+  #     additionalRules:
+  #       "alert:CustomTestAlert":
+  #         expr: vector(1) == 0
+  #         for: 1h
+  #         annotations:
+  #           summary: Test alert
+  #         labels:
+  #           severity: warning
+  #     patchRules:
+  #       ignoreNames:
+  #         - MimirAutoscalerNotActive
+  #       patches:
+  #         MimirAutoscalerKedaFailing:
+  #           expr: |
+  #             !!!!!!!!!!!!!!!!!! vector(0) > 1

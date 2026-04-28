@@ -1,5 +1,4 @@
 # Overwrite parameters here
-
 parameters:
   kapitan:
     dependencies:
