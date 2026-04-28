@@ -60,10 +60,10 @@ data:
         kvstore:
           etcd:
             endpoints:
-            - https://vshn-appuio-mimir-kv-etcd-0.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
-            - https://vshn-appuio-mimir-kv-etcd-1.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
-            - https://vshn-appuio-mimir-kv-etcd-2.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
-            password: t-silent-test-1234/c-green-test-1234/vshn-appuio-mimir-kv/etcd_root_password
+            - https://mimir-kv-etcd-0.mimir-kv-etcd-headless.mimir-kv:2379
+            - https://mimir-kv-etcd-1.mimir-kv-etcd-headless.mimir-kv:2379
+            - https://mimir-kv-etcd-2.mimir-kv-etcd-headless.mimir-kv:2379
+            password: t-silent-test-1234/c-green-test-1234/mimir-kv/etcd_root_password
             tls_enabled: true
             tls_insecure_skip_verify: true
             username: root

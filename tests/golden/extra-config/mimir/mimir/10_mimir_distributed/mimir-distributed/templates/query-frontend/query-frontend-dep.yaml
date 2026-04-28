@@ -24,7 +24,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 986355326663cf5318bda914d2d306d1e55a5172bb3fb985619cbfb101956455
+        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
       labels:
         app.kubernetes.io/component: query-frontend
         app.kubernetes.io/instance: mimir

@@ -77,14 +77,13 @@ parameters:
       haStore:
         type: etcd
         endpoints:
-          - https://vshn-appuio-mimir-kv-etcd-0.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
-          - https://vshn-appuio-mimir-kv-etcd-1.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
-          - https://vshn-appuio-mimir-kv-etcd-2.vshn-appuio-mimir-kv-etcd-headless.vshn-appuio-mimir-kv:2379
+          - https://mimir-kv-etcd-0.mimir-kv-etcd-headless.mimir-kv:2379
+          - https://mimir-kv-etcd-1.mimir-kv-etcd-headless.mimir-kv:2379
+          - https://mimir-kv-etcd-2.mimir-kv-etcd-headless.mimir-kv:2379
         tls_enabled: true
         tls_insecure_skip_verify: true
-        # (swi): feels wrong but we use the etcd exclusivly for mimir and don't currently have a way to provision other users
         username: root
-        password: "?{vaultkv:${cluster:tenant}/${cluster:name}/vshn-appuio-mimir-kv/etcd_root_password}"
+        password: '?{vaultkv:${cluster:tenant}/${cluster:name}/mimir-kv/etcd_root_password}'
 
     monitoring: false
     alerts:

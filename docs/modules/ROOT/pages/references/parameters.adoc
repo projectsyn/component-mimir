@@ -336,7 +336,176 @@ caches:
     enabled: true
 ----
 
-The results cache stores the results for index-stat, instant-metric, label and volume queries and it supports negative caching for log queries.
+
+== `global`
+
+Configure global settings.
+
+=== `global.nodeSelector`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+global:
+  nodeSelector: {}
+----
+example::
++
+[source,yaml]
+----
+global:
+  nodeSelector:
+    appuio.io/node-class: plus
+----
+
+Node selector configuration which is used for each component's `nodeSelector` field in parameter `helm_values`.
+
+This value is used verbatim as a Kubernetes node selector.
+
+=== `global.zoneAwareReplication`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+global:
+  zoneAwareReplication:
+    enabled: false
+    zones: []
+----
+example::
++
+[source,yaml]
+----
+global:
+  zoneAwareReplication:
+    enabled: true
+    zones:
+      - name: zone-a
+        nodeSelector:
+          topology.kubernetes.io/zone: 'zone-a'
+      - name: zone-b
+        nodeSelector:
+          topology.kubernetes.io/zone: 'zone-b'
+      - name: zone-c
+        nodeSelector:
+          topology.kubernetes.io/zone: 'zone-c'
+----
+
+Zone-aware replication is the replication of data across failure domains.
+Zone-aware replication helps to avoid data loss during a domain outage. Grafana Mimir defines failure domains as zones. 
+
+=== `global.nginxResolverOverride`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+global:
+  nginxResolverOverride: ''
+----
+example::
++
+[source,yaml]
+----
+global:
+  nginxResolverOverride: '172.30.0.10'
+----
+
+If set, the nginx resolver is set to this value.
+This can be used to insert the static IP of the cluster DNS server, which will fix the case when the resolved DNS service IP changes, but nginx keeps the old IP.
+
+
+== `config`
+
+General configuration options for Mimir.
+
+=== `config.tenantFederation`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+config:
+  tenantFederation: false
+----
+
+Mimir ruler tenant federation is a Mimir feature enabling recording and alerting rules to query and aggregate data across multiple tenant isolation boundaries.
+
+=== `config.haTracker`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+config:
+  haTracker: false
+----
+
+The Mimir HA Tracker is a component of the Mimir distributor that deduplicates incoming metrics from multiple Prometheus/Alloy replicas, ensuring identical time series sent by HA pairs are only stored once.
+
+=== `config.haLabels`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+config:
+  haLabels:
+    cluster: cluster_id
+    replica: prometheus_replica
+----
+
+The labels by which incoming metrics are deduplicated.
+
+=== `config.haStore`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+config:
+  haStore:
+    type: etcd
+----
+default::
++
+[source,yaml]
+----
+config:
+  haStore:
+    type: etcd
+    endpoints:
+      - https://mimir-kv-etcd-0.mimir-kv-etcd-headless.mimir-kv:2379
+      - https://mimir-kv-etcd-1.mimir-kv-etcd-headless.mimir-kv:2379
+      - https://mimir-kv-etcd-2.mimir-kv-etcd-headless.mimir-kv:2379
+    tls_enabled: true
+    tls_insecure_skip_verify: true
+    # (swi): feels wrong but we use the etcd exclusivly for mimir and don't currently have a way to provision other users
+    username: root
+    password: '?{vaultkv:${cluster:tenant}/${cluster:name}/mimir-kv/etcd_root_password}'
+----
+
+The HA tracker requires a key-value (KV) store to coordinate which replica is currently elected.
+See https://grafana.com/docs/mimir/latest/configure/configure-high-availability-deduplication/#configure-the-ha-tracker-kv-store[Mimmir documentation] for details.
+
+IMPORTANT: The key-value store has to be setup seperatly!
+
 
 == `secrets`
 
@@ -346,39 +515,30 @@ default::
 +
 [source,yaml]
 ----
-mimir-bucket-secret:
-  stringData:
-    S3_ACCESS_KEY_ID: null
-    S3_SECRET_ACCESS_KEY: null
-    S3_ENDPOINT: null
+secrets: {}
 ----
 
 A dict of secrets to create in the namespace. The key is the name of the secret, the value is the content of the secret.
 The value must be a dict with a key `stringData` which is a dict of key/value pairs to add to the secret.
 
-Holds the secrets for the S3 bucket by default.
+
+== `monitoring`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+monitoring: true
+----
+
+Enable the service monitors, rules, and alerts from the Helm chart.
 
 
 == `alerts`
 
 Configurations related to alerts.
-
-[NOTE]
-====
-Upstream service monitors, rules, and alerts can be enabled by setting the following Helm values:
-
-[source,yaml]
-----
-helm_values:
-  metaMonitoring:
-    serviceMonitor:
-      enabled: true
-    prometheusRule:
-      enabled: true
-      mimirAlerts: true
-      mimirRules: true
-----
-====
 
 === `alerts.patchRules`
 
@@ -389,12 +549,13 @@ example::
 +
 [source,yaml]
 ----
-patchRules:
-  ignoreNames:
-    - MimirContinuousTestNotRunningOnWrites
-  patches:
-    MimirInconsistentRuntimeConfig:
-      for: 15m
+alerts:
+  patchRules:
+    ignoreNames:
+      - MimirContinuousTestNotRunningOnWrites
+    patches:
+      MimirInconsistentRuntimeConfig:
+        for: 15m
 ----
 
 This parameter allows users to patch or remove alerts provided by the upstream Mimir chart.
@@ -406,7 +567,6 @@ The component expects valid partial Prometheus alert rule objects as values.
 
 IMPORTANT: The provided values aren't validated, they're applied to the corresponding upstream alert as-is.
 
-
 === `alerts.additionalRules`
 
 [horizontal]
@@ -416,39 +576,19 @@ example::
 +
 [source,yaml]
 ----
-additionalRules:
-  "alert:CustomTestAlert":
-    expr: vector(1) == 0
-    for: 1h
-    annotations:
-      summary: Test alert
-    labels:
-      severity: warning
+alerts:
+  additionalRules:
+    "alert:CustomTestAlert":
+      expr: vector(1) == 0
+      for: 1h
+      annotations:
+        summary: Test alert
+      labels:
+        severity: warning
 ----
 
 This parameter allows users to configure additional alerting and recording rules.
 All rules defined in this parameter will be added to rule group `mimir-custom.rules`.
-
-
-== `globalNodeSelector`
-
-[horizontal]
-type:: dict
-default:: `{}`
-
-Node selector configuration which is used for each component's `nodeSelector` field in parameter `helm_values`.
-
-This value is used verbatim as a Kubernetes node selector.
-
-== `nginx_resolver_override`
-
-[horizontal]
-type:: string
-default:: `""`
-example:: `"172.30.0.10"`
-
-If set, the nginx resolver is set to this value.
-This can be used to insert the static IP of the cluster DNS server, which will fix the case when the resolved DNS service IP changes, but nginx keeps the old IP.
 
 
 == `helm_values`
@@ -486,11 +626,6 @@ secrets:
   mimir-nginx-htpasswd:
     stringData:
       .htpasswd: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/htpasswd}"
-  mimir-bucket-secret:
-    stringData:
-      S3_ACCESS_KEY_ID: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/s3_access_key}"
-      S3_SECRET_ACCESS_KEY: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/s3_secret_key}"
-      S3_ENDPOINT: objects.s3.example.com
 
 helm_values:
   nginx:

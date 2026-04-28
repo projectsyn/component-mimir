@@ -104,15 +104,6 @@ parameters:
         #increase if auth credentials change
         secretVersion: 0
 
-    monitoring: true
-    alerts:
-      additionalRules: {}
-      patchRules:
-        ignoreNames: []
-        patches: {}
-
-    structuredConfig: {}
-    runtimeConfig: {}
     config:
       tenantFederation: false
       haTracker: false
@@ -121,6 +112,13 @@ parameters:
         replica: prometheus_replica
       haStore:
         type: etcd
+
+    monitoring: true
+    alerts:
+      additionalRules: {}
+      patchRules:
+        ignoreNames: []
+        patches: {}
 
     secrets: {}
 
