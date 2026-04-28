@@ -152,29 +152,29 @@ local images = com.makeMergeable({
 });
 
 local global = com.makeMergeable({
-    global: {
-      extraEnvFrom: [ {
-        secretRef: {
-          name: 'mimir-bucket-secret',
-        },
-      } ],
-      podAnnotations: {
-        bucketSecretVersion: '%s' % params.s3.auth.secretVersion,
+  global: {
+    extraEnvFrom: [ {
+      secretRef: {
+        name: 'mimir-bucket-secret',
       },
+    } ],
+    podAnnotations: {
+      bucketSecretVersion: '%s' % params.s3.auth.secretVersion,
     },
+  },
   minio: {
     enabled: false,
   },
-  //   [if params.monitoring then 'metaMonitoring']: {
-  //     serviceMonitor: {
-  //       enabled: params.monitoring,
-  //     },
-  //     prometheusRule: {
-  //       enabled: params.monitoring,
-  //       mimirAlerts: true,
-  //       mimirRules: true,
-  //     },
-  //   },
+  [if params.monitoring then 'metaMonitoring']: {
+    serviceMonitor: {
+      enabled: params.monitoring,
+    },
+    prometheusRule: {
+      enabled: params.monitoring,
+      mimirAlerts: true,
+      mimirRules: true,
+    },
+  },
 });
 
 // Mimir Config
