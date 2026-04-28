@@ -3,19 +3,19 @@ kind: Deployment
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: nginx
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/version: 2.17.0
     helm.sh/chart: mimir-distributed-5.8.0
-  name: mimir-nginx
+  name: mimir-gateway
   namespace: syn-mimir
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: nginx
+      app.kubernetes.io/component: gateway
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
@@ -27,9 +27,9 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: d8e5e5d94deb56bc67ea032493d814096eed0d01b11655d587eb41ae658023b1
+        checksum/config: 4820f155d6cd0e9f89c0ed25fe3fefb5b0ea17af83545c8adff8195b16ac9df2
       labels:
-        app.kubernetes.io/component: nginx
+        app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
@@ -43,18 +43,23 @@ spec:
                 name: mimir-bucket-secret
           image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
           imagePullPolicy: IfNotPresent
-          name: nginx
+          name: gateway
           ports:
             - containerPort: 8080
-              name: http-metric
+              name: http-metrics
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: /
-              port: http-metric
+              path: /ready
+              port: http-metrics
             initialDelaySeconds: 15
             timeoutSeconds: 1
-          resources: {}
+          resources:
+            limits:
+              memory: 731Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -63,7 +68,7 @@ spec:
             readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /etc/nginx/nginx.conf
-              name: config
+              name: nginx-config
               subPath: nginx.conf
             - mountPath: /tmp
               name: tmp
@@ -81,7 +86,7 @@ spec:
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
-              app.kubernetes.io/component: nginx
+              app.kubernetes.io/component: gateway
               app.kubernetes.io/instance: mimir
               app.kubernetes.io/name: mimir
           maxSkew: 1
@@ -89,9 +94,18 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
       volumes:
         - configMap:
-            name: mimir-nginx
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: mimir-config
           name: config
-        - emptyDir: {}
-          name: tmp
+        - configMap:
+            name: mimir-runtime
+          name: runtime-config
+        - configMap:
+            name: mimir-gateway-nginx
+          name: nginx-config
         - emptyDir: {}
           name: docker-entrypoint-d-override
+        - emptyDir: {}
+          name: tmp

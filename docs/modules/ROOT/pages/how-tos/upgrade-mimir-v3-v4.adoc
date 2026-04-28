@@ -6,8 +6,33 @@ https://github.com/projectsyn/component-mimir/releases/tag/v4.0.0[see Release No
 The component has lots of options to configure each part of the Mimir installation.
 Please have a look at the xref:references/parameters.adoc[parameters documentation] for reference.
 
+[IMPORTANT]
+====
+This component will automatically migrate to the unified gateway deployment.
+See xref:how-tos/migrate-to-gateway.adoc[] for further instructions.
+====
+
+[IMPORTANT]
+====
+This component will no longer support Helm charts < v5.x of Mimir.
+====
 
 == Explanation of configuration changes
+
+=== new default resource requests
+
+[IMPORTANT]
+====
+This component changes its default resource requests and limits, please check the output of your catalog compilation and adjust if needed.
+See xref:references/parameters.adoc#_components[components] and xref:references/parameters.adoc#_caches[caches] to adjust your settings.
+====
+
+This component supports the following presets:
+
+* `none`: Use the Helm charts defaults.
+* `extra-small`: Component defaults for small production deployments (default).
+* `small`: Upstream defaults for small production deployments.
+* `large`: Upstream defaults for large production deployments.
 
 === legacy `globalNodeSelector`
 

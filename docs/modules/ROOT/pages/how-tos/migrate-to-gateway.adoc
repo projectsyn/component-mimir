@@ -1,0 +1,105 @@
+= Migration to Unified Gateway Deployment
+
+[IMPORTANT]
+====
+The nginx deployment is deprecated and will be removed with Helm chart v7.x.
+It is recommended to migrate to the unified gateway deployment.
+====
+
+You have the following options to migrate to the unified gateway deployment:
+
+* Migrate with short service disruption
+* Migrate without service disruption
+
+
+== Migrate with Short Service Disruption
+
+You dont have to do any migration steps, v4.x of this component will automatically migrate to the unified gateway deployment.
+If you have integrated this Mimir as datasource in Grafana, then the service name will change and you have to update your Grafana deployment.
+
+Update the Grafana datasource url like following:
+
+Old name: `<instance_name>-nginx.<instance_namespace>.svc.cluster.local`
+
+New name: `<instance_name>-gateway.<instance_namespace>.svc.cluster.local`
+
+
+== Migrate without Service Disruption
+
+This guide follows the official documentaton for the https://grafana.com/docs/helm-charts/mimir-distributed/v5.8.x/migration-guides/migrate-to-unified-proxy-deployment[Migration to Unified Gateway Deployment].
+
+[TIP]
+====
+Please read the official documentation about the migration before you continue.
+====
+
+=== Step 1: Enable Nginx Deployment
+
+When upgrading to this version of the component, make sure you have nginx and gateway (default) enabled:
+
+[source,yaml]
+----
+components:
+  gateway:
+    enabled: true <1>
+  nginx:
+    enabled: true <2>
+----
+<1> In component v4.x this is enabled by default.
+<2> Enable nginx deployment, this will also keep the ingress associated with the nginx deployment.
+
+Compile and push the catalog.
+
+=== (Optional) Keep the old Service Name
+
+If you want to migrate to the unified gateway deployment but want to keep the service name, you need to add the following configuration:
+
+[source,yaml]
+----
+components:
+  gateway:
+    service:
+      nameOverride: mimir-nginx <1>
+----
+<1> Overwrite the service name.
+
+[IMPORTANT]
+====
+When you override the service name, use the correct name.
+Above example is only for ilustration.
+====
+
+=== Step 2: Disable Nginx Deployment
+
+In the first step we ensured the gateway deployment is present but not yet active, this makes sure the transition to the gateway deployment has the least disruption.
+
+Disable nginx deployment and optionally keep the service name the same as before:
+
+[source,yaml]
+----
+components:
+  gateway:
+    enabled: true <1>
+  nginx:
+    enabled: false <2>
+----
+<1> In component v4.x this is enabled by default, you can remove that configuration.
+<2> In component v4.x this is disabled by default, you can remove that configuration.
+
+Compile and push the catalog.
+
+
+== (Optional) Keep Nginx Deployment
+
+To stay with the deprecated nginx deployment you need to add the following configuration:
+
+[source,yaml]
+----
+components:
+  gateway:
+    enabled: false <1>
+  nginx:
+    enabled: true <2>
+----
+<1> Disable gateway deployment.
+<2> Enable nginx deployment.

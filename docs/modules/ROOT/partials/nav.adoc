@@ -1,4 +1,5 @@
 * xref:index.adoc[Home]
-* xref:how-tos/upgrade-mimir-v1-v2.adoc[Upgrade component-mimir from v1 to v2]
-* xref:how-tos/upgrade-mimir-v3-v4.adoc[Upgrade component-mimir from v3 to v4]
 * xref:references/parameters.adoc[Parameters]
+* xref:how-tos/upgrade-mimir-v1-v2.adoc[]
+* xref:how-tos/upgrade-mimir-v3-v4.adoc[]
+* xref:how-tos/migrate-to-gateway.adoc[]

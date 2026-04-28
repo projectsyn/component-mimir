@@ -57,9 +57,9 @@ parameters:
         enabled: true
       # Ingress
       gateway:
-        enabled: false
-      nginx:
         enabled: true
+      nginx:
+        enabled: false
       # Optional
       alertmanager:
         enabled: true
