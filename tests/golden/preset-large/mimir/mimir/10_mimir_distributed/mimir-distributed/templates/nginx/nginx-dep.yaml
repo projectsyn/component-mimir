@@ -12,7 +12,7 @@ metadata:
   name: mimir-nginx
   namespace: syn-mimir
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/component: nginx
@@ -52,7 +52,12 @@ spec:
               port: http-metric
             initialDelaySeconds: 15
             timeoutSeconds: 1
-          resources: {}
+          resources:
+            limits:
+              memory: 731Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

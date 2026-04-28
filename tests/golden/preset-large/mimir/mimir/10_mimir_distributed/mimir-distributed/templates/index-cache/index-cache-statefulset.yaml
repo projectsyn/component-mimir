@@ -13,7 +13,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app.kubernetes.io/component: index-cache
@@ -54,10 +54,10 @@ spec:
               name: client
           resources:
             limits:
-              memory: 1500Mi
+              memory: 2458Mi
             requests:
               cpu: 500m
-              memory: 1500Mi
+              memory: 2458Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

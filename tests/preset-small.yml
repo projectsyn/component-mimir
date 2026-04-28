@@ -8,3 +8,6 @@ parameters:
       - type: https
         source: https://raw.githubusercontent.com/appuio/component-openshift4-monitoring/master/lib/openshift4-monitoring-prom.libsonnet
         output_path: vendor/lib/prom.libsonnet
+
+  mimir:
+    preset: small

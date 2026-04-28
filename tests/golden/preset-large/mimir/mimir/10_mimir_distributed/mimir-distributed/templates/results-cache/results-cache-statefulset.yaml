@@ -13,7 +13,7 @@ metadata:
   namespace: syn-mimir
 spec:
   podManagementPolicy: Parallel
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app.kubernetes.io/component: results-cache
@@ -35,7 +35,7 @@ spec:
       affinity: {}
       containers:
         - args:
-            - -m 512
+            - -m 1024
             - -o
             - modern
             - -I 1m
@@ -54,10 +54,10 @@ spec:
               name: client
           resources:
             limits:
-              memory: 614Mi
+              memory: 1229Mi
             requests:
               cpu: 500m
-              memory: 614Mi
+              memory: 1229Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

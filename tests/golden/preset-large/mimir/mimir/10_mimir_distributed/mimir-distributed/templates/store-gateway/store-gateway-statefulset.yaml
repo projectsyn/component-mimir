@@ -13,7 +13,7 @@ metadata:
   name: mimir-store-gateway
   namespace: syn-mimir
 spec:
-  replicas: 1
+  replicas: 6
   selector:
     matchLabels:
       app.kubernetes.io/component: store-gateway
@@ -35,7 +35,23 @@ spec:
         helm.sh/chart: mimir-distributed-4.3.0
       namespace: syn-mimir
     spec:
-      affinity: {}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: target
+                    operator: In
+                    values:
+                      - store-gateway
+              topologyKey: kubernetes.io/hostname
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - store-gateway
+              topologyKey: kubernetes.io/hostname
       containers:
         - args:
             - -target=store-gateway
@@ -66,10 +82,10 @@ spec:
             initialDelaySeconds: 60
           resources:
             limits:
-              memory: 2.1Gi
+              memory: 8.5Gi
             requests:
-              cpu: 500m
-              memory: 768Mi
+              cpu: 1
+              memory: 6Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -128,4 +144,4 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 30Gi
+            storage: 50Gi

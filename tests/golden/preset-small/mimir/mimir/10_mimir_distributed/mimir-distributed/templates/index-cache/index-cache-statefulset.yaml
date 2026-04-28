@@ -54,10 +54,10 @@ spec:
               name: client
           resources:
             limits:
-              memory: 1500Mi
+              memory: 2458Mi
             requests:
               cpu: 500m
-              memory: 1500Mi
+              memory: 2458Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
