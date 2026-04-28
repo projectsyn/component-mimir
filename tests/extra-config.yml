@@ -131,8 +131,5 @@ parameters:
       labels:
         custom-label: my-label
 
-    helm_values:
-      nginx:
-        basicAuth:
-          enabled: true
-          existingSecret: mimir-nginx-htpasswd
+    basicAuth:
+      enabled: true

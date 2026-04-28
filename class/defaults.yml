@@ -108,6 +108,10 @@ parameters:
         cert: null
       url: ''
 
+    basicAuth:
+      enabled: false
+      htpasswd: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/htpasswd}'
+
     config:
       tenantFederation: false
       haTracker: false

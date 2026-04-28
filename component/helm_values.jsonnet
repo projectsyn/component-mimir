@@ -268,15 +268,24 @@ local _ingress = {
     secretName: '%s-tls' % std.strReplace(params.ingress.url, '.', '-'),
   } ],
 };
+local _basicAuth = {
+  enabled: params.basicAuth.enabled,
+  [if params.basicAuth.htpasswd != null && !std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: '%s-nginx-htpasswd' % inv.parameters._instance,
+  [if std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: params.basicAuth.existingSecret,
+};
 local ingress = com.makeMergeable(
   if params.components.nginx.enabled then {
     nginx: {
       ingress: _ingress,
+      basicAuth: _basicAuth,
     },
   }
   else if params.components.gateway.enabled then {
     gateway: {
       ingress: _ingress,
+      nginx: {
+        basicAuth: _basicAuth,
+      },
     },
   }
   else {}

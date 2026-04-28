@@ -449,7 +449,7 @@ global:
 ----
 
 Zone-aware replication is the replication of data across failure domains.
-Zone-aware replication helps to avoid data loss during a domain outage. Grafana Mimir defines failure domains as zones. 
+Zone-aware replication helps to avoid data loss during a domain outage. Grafana Mimir defines failure domains as zones.
 
 === `global.nginxResolverOverride`
 
@@ -603,6 +603,44 @@ ingress:
 ----
 
 Add custom annotations and labels.
+
+
+== `basicAuth`
+
+Configures basic authentication for nginx.
+
+=== `basicAuth.enabled`
+
+[horizontal]
+type:: boolean
+default::
++
+[source,yaml]
+----
+basicAuth:
+  enabled: false
+----
+
+Enables basic authentication for nginx.
+
+=== `basicAuth.htpasswd`
+
+[horizontal]
+type:: boolean
+default::
++
+[source,yaml]
+----
+basicAuth:
+  htpasswd: '?{vaultkv:${cluster:tenant}/${cluster:name}/${_instance}/htpasswd}'
+----
+
+The content of the `.htpasswd` file.
+
+[TIP]
+====
+If you set the `basicAuth.htpasswd: null`, you can use the `basicAuth.existingSecret` to inlcude an existing secret.
+====
 
 
 == `config`

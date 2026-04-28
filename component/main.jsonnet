@@ -1,10 +1,9 @@
 // main template for mimir
+local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local inv = kap.inventory();
-local com = import 'lib/commodore.libjsonnet';
-
 local prom = import 'lib/prom.libsonnet';
+local inv = kap.inventory();
 
 // The hiera parameters for the component
 local params = inv.parameters.mimir;
@@ -16,6 +15,12 @@ local secrets = com.generateResources(
         stringData: {
           'tls.key': params.ingress.tls.key,
           'tls.cert': params.ingress.tls.cert,
+        },
+      },
+    [if params.basicAuth.enabled && params.basicAuth.htpasswd != null then '%s-nginx-htpasswd' % inv.parameters._instance]:
+      {
+        stringData: {
+          '.htpasswd': params.basicAuth.htpasswd,
         },
       },
     'mimir-bucket-secret': {

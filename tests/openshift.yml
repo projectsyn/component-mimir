@@ -79,4 +79,9 @@ parameters:
       enabled: true
       url: metrics-receive.example.com
 
+    basicAuth:
+      enabled: true
+      htpasswd: null
+      existingSecret: the-secret
+
     monitoring: false
