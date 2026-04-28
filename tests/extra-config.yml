@@ -114,3 +114,25 @@ parameters:
           MimirAutoscalerKedaFailing:
             expr: |
               !!!!!!!!!!!!!!!!!! vector(0) > 1
+
+    ingress:
+      enabled: true
+      tls:
+        clusterIssuer: null
+        key: |
+          -----BEGIN PRIVATE KEY-----
+          ...
+          -----END PRIVATE KEY-----
+        cert: |
+          -----BEGIN CERTIFICATE-----
+          ...
+          -----END CERTIFICATE-----
+      url: metrics-receive.example.com
+      labels:
+        custom-label: my-label
+
+    helm_values:
+      nginx:
+        basicAuth:
+          enabled: true
+          existingSecret: mimir-nginx-htpasswd

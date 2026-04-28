@@ -22,6 +22,10 @@ parameters:
     # See parameters.adoc for links to the upstream sizing guidelines.
     preset: small
     components:
+      nginx:
+        enabled: false
+      gateway:
+        enabled: true
       alertmanager:
         replicas: 3
       compactor:
@@ -70,5 +74,9 @@ parameters:
             nodeSelector: {}
           - name: zone-c
             nodeSelector: {}
+
+    ingress:
+      enabled: true
+      url: metrics-receive.example.com
 
     monitoring: false

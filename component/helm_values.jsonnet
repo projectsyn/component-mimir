@@ -54,6 +54,7 @@ local components = com.makeMergeable({
   } + com.makeMergeable(params.components.rolloutOperator),
   // Ingress Configuration
   gateway: {
+    [if params.components.gateway.enabled then 'enabledNonEnterprise']: params.components.gateway.enabled,
     nodeSelector: std.get(params.components.gateway, 'nodeSelector', globalConfig.nodeSelector),
   } + com.makeMergeable(params.components.gateway),
   nginx: {
@@ -246,8 +247,44 @@ local mimir = com.makeMergeable({
   },
 });
 
+// Mimir Config
+local _ingress = {
+  enabled: params.ingress.enabled,
+  [if params.ingress.tls.enabled && params.ingress.tls.clusterIssuer != null then 'annotations']: {
+    'cert-manager.io/cluster-issuer': params.ingress.tls.clusterIssuer,
+  } + if std.objectHas(params.ingress, 'annotations') then com.makeMergeable(params.ingress.annotations) else {},
+  [if std.objectHas(params.ingress, 'labels') then 'labels']: params.ingress.labels,
+  hosts: [ {
+    host: params.ingress.url,
+    paths: [
+      {
+        path: '/',
+        pathType: 'Prefix',
+      },
+    ],
+  } ],
+  [if params.ingress.tls.enabled then 'tls']: [ {
+    hosts: [ params.ingress.url ],
+    secretName: '%s-tls' % std.strReplace(params.ingress.url, '.', '-'),
+  } ],
+};
+local ingress = com.makeMergeable(
+  if params.components.nginx.enabled then {
+    nginx: {
+      ingress: _ingress,
+    },
+  }
+  else if params.components.gateway.enabled then {
+    gateway: {
+      ingress: _ingress,
+    },
+  }
+  else {}
+);
+
+
 {
   ['%s-components' % inv.parameters._instance]: components + caches,
-  ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir,
+  ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir + ingress,
   ['%s-overrides' % inv.parameters._instance]: params.helm_values,
 }

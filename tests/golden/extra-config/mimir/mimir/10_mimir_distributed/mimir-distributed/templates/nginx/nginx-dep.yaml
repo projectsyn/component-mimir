@@ -24,7 +24,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: decb6671cd2cb1b4d2061898c386af74bd1e35c9e3ad4ac950d4b96f25c05a2f
+        checksum/config: 288420e47139856cf8f3c6a7a10ea589dce4957c24833010e6b552edb7805362
       labels:
         app.kubernetes.io/component: nginx
         app.kubernetes.io/instance: mimir
@@ -67,6 +67,8 @@ spec:
           volumeMounts:
             - mountPath: /etc/nginx
               name: config
+            - mountPath: /etc/nginx/secrets
+              name: auth
             - mountPath: /tmp
               name: tmp
             - mountPath: /docker-entrypoint.d
@@ -95,6 +97,9 @@ spec:
         - configMap:
             name: mimir-nginx
           name: config
+        - name: auth
+          secret:
+            secretName: mimir-nginx-htpasswd
         - emptyDir: {}
           name: tmp
         - emptyDir: {}

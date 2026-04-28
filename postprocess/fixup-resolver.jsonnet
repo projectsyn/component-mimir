@@ -24,4 +24,4 @@ local fix = function(o)
   else
     o;
 
-com.fixupDir(dir, fix)
+if params.components.nginx.enabled then com.fixupDir(dir, fix) else {}

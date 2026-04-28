@@ -11,6 +11,13 @@ local params = inv.parameters.mimir;
 
 local secrets = com.generateResources(
   {
+    [if params.ingress.tls.enabled && params.ingress.tls.key != null && params.ingress.tls.cert != null then '%s-tls' % std.strReplace(params.ingress.url, '.', '-')]:
+      {
+        stringData: {
+          'tls.key': params.ingress.tls.key,
+          'tls.cert': params.ingress.tls.cert,
+        },
+      },
     'mimir-bucket-secret': {
       stringData: {
         S3_ACCESS_KEY_ID: params.s3.auth.accessKeyId,
