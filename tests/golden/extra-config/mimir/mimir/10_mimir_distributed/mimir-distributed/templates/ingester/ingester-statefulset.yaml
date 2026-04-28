@@ -2,15 +2,16 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '25'
+    grafana.com/rollout-downscale-leader: mimir-ingester-zone-a
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: ingester
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-a
     rollout-group: ingester
     zone: zone-a
@@ -31,15 +32,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
+        checksum/config: a3df40a9efd279eef6efce6905b020f1f86f67afd26d739fbd208f5dc9ea2077
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: ingester-zone-a
         rollout-group: ingester
         zone: zone-a
@@ -54,10 +55,10 @@ spec:
                     operator: In
                     values:
                       - ingester
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - ingester-zone-a
+                      - zone-a
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -65,7 +66,10 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -ingester.ring.instance-availability-zone=zone-a
-          env: null
+            - -memberlist.abort-if-fast-join-fails=true
+          env:
+            - name: GOMAXPROCS
+              value: '8'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
@@ -109,8 +113,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -119,8 +121,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 1200
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -145,7 +146,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:
@@ -158,15 +161,16 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '25'
+    grafana.com/rollout-downscale-leader: mimir-ingester-zone-b
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: ingester
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-b
     rollout-group: ingester
     zone: zone-b
@@ -187,15 +191,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
+        checksum/config: a3df40a9efd279eef6efce6905b020f1f86f67afd26d739fbd208f5dc9ea2077
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: ingester-zone-b
         rollout-group: ingester
         zone: zone-b
@@ -210,10 +214,10 @@ spec:
                     operator: In
                     values:
                       - ingester
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - ingester-zone-b
+                      - zone-b
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -221,7 +225,10 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -ingester.ring.instance-availability-zone=zone-b
-          env: null
+            - -memberlist.abort-if-fast-join-fails=true
+          env:
+            - name: GOMAXPROCS
+              value: '8'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
@@ -265,8 +272,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -275,8 +280,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 1200
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -301,7 +305,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:
@@ -314,15 +320,16 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '25'
+    grafana.com/rollout-downscale-leader: mimir-ingester-zone-c
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: ingester
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-c
     rollout-group: ingester
     zone: zone-c
@@ -343,15 +350,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
+        checksum/config: a3df40a9efd279eef6efce6905b020f1f86f67afd26d739fbd208f5dc9ea2077
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: ingester-zone-c
         rollout-group: ingester
         zone: zone-c
@@ -366,10 +373,10 @@ spec:
                     operator: In
                     values:
                       - ingester
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - ingester-zone-c
+                      - zone-c
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -377,7 +384,10 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -ingester.ring.instance-availability-zone=zone-c
-          env: null
+            - -memberlist.abort-if-fast-join-fails=true
+          env:
+            - name: GOMAXPROCS
+              value: '8'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
@@ -421,8 +431,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -431,8 +439,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 1200
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -457,7 +464,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:

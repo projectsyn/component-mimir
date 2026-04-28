@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-ruler
   namespace: syn-mimir
 spec:
@@ -28,28 +28,27 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
+        checksum/config: e051d82236216b3fe6df452470f5aed5d3a199c95e061410ca124a06f79ccd25
       labels:
         app.kubernetes.io/component: ruler
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=ruler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
+            - -distributor.remote-timeout=10s
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ruler
@@ -87,10 +86,8 @@ spec:
               name: runtime-config
             - mountPath: /data
               name: storage
-              subPath: null
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -101,8 +98,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 180
-      tolerations: []
+      terminationGracePeriodSeconds: 600
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:

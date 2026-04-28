@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-querier
   namespace: syn-mimir
 spec:
@@ -20,28 +20,33 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
+        checksum/config: a3df40a9efd279eef6efce6905b020f1f86f67afd26d739fbd208f5dc9ea2077
       labels:
         app.kubernetes.io/component: querier
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=querier
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
+            - -querier.store-gateway-client.grpc-max-recv-msg-size=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '6'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
@@ -83,10 +88,8 @@ spec:
               name: runtime-config
             - mountPath: /data
               name: storage
-              subPath: null
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -98,7 +101,6 @@ spec:
           type: RuntimeDefault
       serviceAccountName: mimir
       terminationGracePeriodSeconds: 180
-      tolerations: []
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:

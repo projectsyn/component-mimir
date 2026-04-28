@@ -47,6 +47,8 @@ mimir-distributed:
   version: '4.3.0'
 ----
 
+IMPORTANT: This version of the component does not support Helm charts < v5.x!
+
 Holds the reference to the used version of the charts.
 See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
 

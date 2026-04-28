@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-metadata-cache
   namespace: syn-mimir
 spec:
@@ -29,24 +29,21 @@ spec:
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
     spec:
-      affinity: {}
       containers:
         - args:
             - -m 512
-            - -o
-            - modern
+            - --extended=modern
             - -I 1m
             - -c 16384
             - -v
             - -u 11211
-          env: null
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/library/memcached:1.6.17-alpine
+          image: docker.io/library/memcached:1.6.38-alpine
           imagePullPolicy: IfNotPresent
           name: memcached
           ports:
@@ -64,25 +61,28 @@ spec:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
+          volumeMounts: null
         - args:
             - --memcached.address=localhost:11211
             - --web.listen-address=0.0.0.0:9150
-          image: docker.io/prom/memcached-exporter:v0.6.0
+          image: docker.io/prom/memcached-exporter:v0.15.3
           imagePullPolicy: IfNotPresent
           name: exporter
           ports:
             - containerPort: 9150
               name: http-metrics
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              memory: 250Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -93,8 +93,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 60
-      tolerations: []
-      topologySpreadConstraints: null
+      terminationGracePeriodSeconds: 30
+      volumes: null
   updateStrategy:
     type: RollingUpdate

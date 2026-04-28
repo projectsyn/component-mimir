@@ -5,9 +5,10 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: rollout-operator
-    app.kubernetes.io/version: v0.2.0
-    helm.sh/chart: rollout-operator-0.2.0
+    app.kubernetes.io/version: v0.28.0
+    helm.sh/chart: rollout-operator-0.30.0
   name: mimir-rollout-operator
+  namespace: syn-mimir
 spec:
   minReadySeconds: 10
   replicas: 1
@@ -24,11 +25,12 @@ spec:
       labels:
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/name: rollout-operator
+      namespace: syn-mimir
     spec:
       containers:
         - args:
             - -kubernetes.namespace=syn-mimir
-          image: docker.io/grafana/rollout-operator:v0.2.0
+          image: docker.io/grafana/rollout-operator:v0.28.0
           imagePullPolicy: IfNotPresent
           name: rollout-operator
           ports:
@@ -43,7 +45,6 @@ spec:
             timeoutSeconds: 1
           resources:
             limits:
-              cpu: '1'
               memory: 200Mi
             requests:
               cpu: 100m

@@ -8,14 +8,15 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-a
     rollout-group: ingester
     zone: zone-a
   name: mimir-ingester-zone-a
   namespace: syn-mimir
 spec:
+  internalTrafficPolicy: Cluster
   ports:
     - name: http-metrics
       port: 8080
@@ -43,14 +44,15 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-b
     rollout-group: ingester
     zone: zone-b
   name: mimir-ingester-zone-b
   namespace: syn-mimir
 spec:
+  internalTrafficPolicy: Cluster
   ports:
     - name: http-metrics
       port: 8080
@@ -78,14 +80,15 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: ingester-zone-c
     rollout-group: ingester
     zone: zone-c
   name: mimir-ingester-zone-c
   namespace: syn-mimir
 spec:
+  internalTrafficPolicy: Cluster
   ports:
     - name: http-metrics
       port: 8080

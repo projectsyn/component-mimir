@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-nginx
   namespace: syn-mimir
 spec:
@@ -19,24 +19,26 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 288420e47139856cf8f3c6a7a10ea589dce4957c24833010e6b552edb7805362
+        checksum/config: c1f21d3959e7c3bb13001370d3ad3e4ba8e195826c766f76bb4e126231d1d562
       labels:
         app.kubernetes.io/component: nginx
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
       containers:
-        - env: null
-          envFrom:
+        - envFrom:
             - secretRef:
                 name: mimir-bucket-secret
           image: docker.io/nginxinc/nginx-unprivileged:latest
@@ -65,8 +67,9 @@ spec:
                 - ALL
             readOnlyRootFilesystem: true
           volumeMounts:
-            - mountPath: /etc/nginx
+            - mountPath: /etc/nginx/nginx.conf
               name: config
+              subPath: nginx.conf
             - mountPath: /etc/nginx/secrets
               name: auth
             - mountPath: /tmp

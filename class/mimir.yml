@@ -18,16 +18,6 @@ parameters:
         input_type: jsonnet
         output_path: ${_instance}/
 
-      - input_type: external
-        input_paths:
-          - ${_base_directory}/run-patch
-        output_path: .
-        args:
-          - -d
-          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/templates/
-          - -p1
-          - -i
-          - ${_base_directory}/component/helmchart-fix/validate.patch
       # Helm chart
       - input_type: jsonnet
         input_paths:
@@ -47,12 +37,10 @@ parameters:
         helm_params:
           name: ${_instance}
           namespace: ${mimir:namespace:name}
+
   commodore:
     postprocess:
       filters:
-        - type: jsonnet
-          filter: postprocess/remove-null-objs.jsonnet
-          path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/minio
         - type: jsonnet
           filter: postprocess/fixup-resolver.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/nginx

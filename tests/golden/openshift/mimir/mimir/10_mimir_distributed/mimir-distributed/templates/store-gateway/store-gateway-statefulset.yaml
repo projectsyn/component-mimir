@@ -2,21 +2,23 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    grafana.com/rollout-downscale-leader: mimir-store-gateway-zone-a
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: store-gateway-zone-a
     rollout-group: store-gateway
     zone: zone-a
   name: mimir-store-gateway-zone-a
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -30,15 +32,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 43f78f94c65c8b6af41c11eeab837647016831202e72e1930b062f0e277e6eed
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: store-gateway-zone-a
         rollout-group: store-gateway
         zone: zone-a
@@ -53,10 +55,10 @@ spec:
                     operator: In
                     values:
                       - store-gateway
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - store-gateway-zone-a
+                      - zone-a
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -64,11 +66,16 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-a
-          env: null
+            - -server.grpc-max-send-msg-size-bytes=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1610612736'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -108,15 +115,12 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 120
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -141,7 +145,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:
@@ -154,21 +160,23 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    grafana.com/rollout-downscale-leader: mimir-store-gateway-zone-b
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: store-gateway-zone-b
     rollout-group: store-gateway
     zone: zone-b
   name: mimir-store-gateway-zone-b
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -182,15 +190,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 43f78f94c65c8b6af41c11eeab837647016831202e72e1930b062f0e277e6eed
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: store-gateway-zone-b
         rollout-group: store-gateway
         zone: zone-b
@@ -205,10 +213,10 @@ spec:
                     operator: In
                     values:
                       - store-gateway
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - store-gateway-zone-b
+                      - zone-b
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -216,11 +224,16 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-b
-          env: null
+            - -server.grpc-max-send-msg-size-bytes=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1610612736'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -260,15 +273,12 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 120
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -293,7 +303,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:
@@ -306,21 +318,23 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-    rollout-max-unavailable: '10'
+    grafana.com/rollout-downscale-leader: mimir-store-gateway-zone-c
+    rollout-max-unavailable: '50'
   labels:
     app.kubernetes.io/component: store-gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
     name: store-gateway-zone-c
     rollout-group: store-gateway
     zone: zone-c
   name: mimir-store-gateway-zone-c
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -334,15 +348,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 43f78f94c65c8b6af41c11eeab837647016831202e72e1930b062f0e277e6eed
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
         name: store-gateway-zone-c
         rollout-group: store-gateway
         zone: zone-c
@@ -357,10 +371,10 @@ spec:
                     operator: In
                     values:
                       - store-gateway
-                  - key: app.kubernetes.io/component
+                  - key: zone
                     operator: NotIn
                     values:
-                      - store-gateway-zone-c
+                      - zone-c
               topologyKey: kubernetes.io/hostname
       containers:
         - args:
@@ -368,11 +382,16 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -store-gateway.sharding-ring.instance-availability-zone=zone-c
-          env: null
+            - -server.grpc-max-send-msg-size-bytes=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '1610612736'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -412,15 +431,12 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 120
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -445,7 +461,9 @@ spec:
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:

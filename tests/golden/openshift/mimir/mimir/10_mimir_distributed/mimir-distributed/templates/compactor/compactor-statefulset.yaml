@@ -8,11 +8,12 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-compactor
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
@@ -24,28 +25,26 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8f8ee0ae1b6336f530fc8a7bbc4910fe12103ec3b95ef4b22b96656081acf9f4
+        checksum/config: 43f78f94c65c8b6af41c11eeab837647016831202e72e1930b062f0e277e6eed
       labels:
         app.kubernetes.io/component: compactor
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=compactor
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: compactor
@@ -85,15 +84,12 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 900
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -118,7 +114,9 @@ spec:
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:

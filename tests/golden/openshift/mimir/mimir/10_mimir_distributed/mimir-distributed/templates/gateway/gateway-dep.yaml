@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-gateway
   namespace: syn-mimir
 spec:
@@ -19,31 +19,31 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: c40a5b406eef7099701fd80b5b36fbc7b2492d29f22c11b2604a5f053da19024
+        checksum/config: d9d835e94b2a841e4abdea4888de1bd4026a83308e150206e856773bc5969b89
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
-        - args: null
-          env: null
-          envFrom:
+        - envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.22-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
           imagePullPolicy: IfNotPresent
-          name: nginx
+          name: gateway
           ports:
             - containerPort: 8080
               name: http-metrics
@@ -67,16 +67,15 @@ spec:
                 - ALL
             readOnlyRootFilesystem: true
           volumeMounts:
-            - mountPath: /etc/nginx
+            - mountPath: /etc/nginx/nginx.conf
               name: nginx-config
+              subPath: nginx.conf
             - mountPath: /etc/nginx/secrets
               name: auth
             - mountPath: /tmp
               name: tmp
             - mountPath: /docker-entrypoint.d
               name: docker-entrypoint-d-override
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         runAsNonRoot: true
         seccompProfile:
