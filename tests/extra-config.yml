@@ -47,6 +47,9 @@ parameters:
         replicas: 1
         persistentVolume:
           size: 20Gi
+      gateway:
+        service:
+          nameOverride: mimir-nginx
 
     caches:
       results:

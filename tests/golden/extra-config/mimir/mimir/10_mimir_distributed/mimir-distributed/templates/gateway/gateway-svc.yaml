@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: nginx
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
@@ -14,12 +14,16 @@ metadata:
 spec:
   internalTrafficPolicy: Cluster
   ports:
-    - name: http-metric
+    - name: http-metrics
       port: 80
       protocol: TCP
-      targetPort: http-metric
+      targetPort: http-metrics
+    - name: legacy-http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
   selector:
-    app.kubernetes.io/component: nginx
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/name: mimir
   type: ClusterIP
