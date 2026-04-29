@@ -8,11 +8,12 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-store-gateway
   namespace: syn-mimir
 spec:
+  podManagementPolicy: OrderedReady
   replicas: 6
   selector:
     matchLabels:
@@ -24,15 +25,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 62d0e2b921029b4c60dff4f771d585b4aa010d6591c095d498a01bb001657b3f
+        checksum/config: e051d82236216b3fe6df452470f5aed5d3a199c95e061410ca124a06f79ccd25
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
       affinity:
@@ -57,11 +58,16 @@ spec:
             - -target=store-gateway
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
+            - -server.grpc-max-send-msg-size-bytes=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '6442450944'
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
-          image: docker.io/grafana/mimir:2.7.1
+          image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: store-gateway
@@ -101,8 +107,6 @@ spec:
               name: storage
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
-      nodeSelector: {}
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -111,8 +115,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 240
-      tolerations: []
+      terminationGracePeriodSeconds: 120
       topologySpreadConstraints:
         - labelSelector:
             matchLabels:
@@ -137,7 +140,9 @@ spec:
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: storage
       spec:
         accessModes:

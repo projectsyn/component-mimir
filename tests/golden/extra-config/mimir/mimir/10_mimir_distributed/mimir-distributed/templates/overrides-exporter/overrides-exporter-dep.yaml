@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
   name: mimir-overrides-exporter
   namespace: syn-mimir
 spec:
@@ -19,28 +19,29 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: e4791bb3e785974362e96eb92d70a838e04145deef091a63527dc649d20bb824
+        checksum/config: a3df40a9efd279eef6efce6905b020f1f86f67afd26d739fbd208f5dc9ea2077
       labels:
         app.kubernetes.io/component: overrides-exporter
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
       namespace: syn-mimir
     spec:
-      affinity: {}
       containers:
         - args:
             - -target=overrides-exporter
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
-          env: null
           envFrom:
             - secretRef:
                 name: mimir-bucket-secret
@@ -83,10 +84,8 @@ spec:
               name: runtime-config
             - mountPath: /data
               name: storage
-              subPath: null
             - mountPath: /active-query-tracker
               name: active-queries
-      initContainers: []
       nodeSelector:
         appuio.io/node-class: plus
       securityContext:
@@ -97,9 +96,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: mimir
-      terminationGracePeriodSeconds: 60
-      tolerations: []
-      topologySpreadConstraints: null
+      terminationGracePeriodSeconds: 30
       volumes:
         - configMap:
             items:
