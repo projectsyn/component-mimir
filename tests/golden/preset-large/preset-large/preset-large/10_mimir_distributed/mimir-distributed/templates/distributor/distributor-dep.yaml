@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: distributor
+    app.kubernetes.io/instance: preset-large
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: preset-large-mimir-distributor
+  namespace: preset-large
+spec:
+  replicas: 12
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: distributor
+      app.kubernetes.io/instance: preset-large
+      app.kubernetes.io/name: mimir
+  strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 84fcdb6c2d60115a12adee5de8904fc286ce24193d2270e4d300da1490483d10
+      labels:
+        app.kubernetes.io/component: distributor
+        app.kubernetes.io/instance: preset-large
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: preset-large
+    spec:
+      containers:
+        - args:
+            - -target=distributor
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -server.grpc.keepalive.max-connection-age=60s
+            - -server.grpc.keepalive.max-connection-age-grace=5m
+            - -server.grpc.keepalive.max-connection-idle=1m
+            - -shutdown-delay=90s
+          env:
+            - name: GOMAXPROCS
+              value: '8'
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: docker.io/grafana/mimir:2.17.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: distributor
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              memory: 5.7Gi
+            requests:
+              cpu: 2
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: preset-large-mimir
+      terminationGracePeriodSeconds: 100
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: distributor
+              app.kubernetes.io/instance: preset-large
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: preset-large-mimir-config
+          name: config
+        - configMap:
+            name: preset-large-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: active-queries

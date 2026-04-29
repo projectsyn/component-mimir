@@ -1,0 +1,9 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    name: mimir-custom
+  name: mimir-custom
+  namespace: openshift
+spec:
+  groups: []

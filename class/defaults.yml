@@ -5,7 +5,7 @@ parameters:
       multi_tenant: true
 
     namespace:
-      name: syn-mimir
+      name: ${_instance}
       create: true
       metadata: {}
 

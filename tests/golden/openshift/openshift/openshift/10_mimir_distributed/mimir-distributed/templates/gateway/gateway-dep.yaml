@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: openshift
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: openshift-mimir-gateway
+  namespace: openshift
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: gateway
+      app.kubernetes.io/instance: openshift
+      app.kubernetes.io/name: mimir
+  strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 7208496211bf02edd7bd29fdddd3622261677bd7da45f28a6fbf8fc9e181b7f9
+      labels:
+        app.kubernetes.io/component: gateway
+        app.kubernetes.io/instance: openshift
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: openshift
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
+          imagePullPolicy: IfNotPresent
+          name: gateway
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 731Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-config
+              subPath: nginx.conf
+            - mountPath: /etc/nginx/secrets
+              name: auth
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /docker-entrypoint.d
+              name: docker-entrypoint-d-override
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: openshift-mimir
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: gateway
+              app.kubernetes.io/instance: openshift
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: openshift-mimir-config
+          name: config
+        - configMap:
+            name: openshift-mimir-runtime
+          name: runtime-config
+        - configMap:
+            name: openshift-mimir-gateway-nginx
+          name: nginx-config
+        - emptyDir: {}
+          name: docker-entrypoint-d-override
+        - name: auth
+          secret:
+            secretName: the-secret
+        - emptyDir: {}
+          name: tmp

@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: memcached
+    app.kubernetes.io/instance: preset-large
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: preset-large-mimir-metadata-cache
+  namespace: preset-large
+spec:
+  podManagementPolicy: Parallel
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: metadata-cache
+      app.kubernetes.io/instance: preset-large
+      app.kubernetes.io/name: mimir
+  serviceName: preset-large-mimir-metadata-cache
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+      labels:
+        app.kubernetes.io/component: metadata-cache
+        app.kubernetes.io/instance: preset-large
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+    spec:
+      containers:
+        - args:
+            - -m 512
+            - --extended=modern
+            - -I 1m
+            - -c 16384
+            - -v
+            - -u 11211
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: docker.io/library/memcached:1.6.38-alpine
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+            - containerPort: 11211
+              name: client
+          resources:
+            limits:
+              memory: 614Mi
+            requests:
+              cpu: 500m
+              memory: 614Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts: null
+        - args:
+            - --memcached.address=localhost:11211
+            - --web.listen-address=0.0.0.0:9150
+          image: docker.io/prom/memcached-exporter:v0.15.3
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+            - containerPort: 9150
+              name: http-metrics
+          resources:
+            limits:
+              memory: 250Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: preset-large-mimir
+      terminationGracePeriodSeconds: 30
+      volumes: null
+  updateStrategy:
+    type: RollingUpdate

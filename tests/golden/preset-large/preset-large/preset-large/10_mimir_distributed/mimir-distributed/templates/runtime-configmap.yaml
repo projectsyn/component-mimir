@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  runtime.yaml: |2
+
+    {}
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: preset-large
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: preset-large-mimir-runtime
+  namespace: preset-large

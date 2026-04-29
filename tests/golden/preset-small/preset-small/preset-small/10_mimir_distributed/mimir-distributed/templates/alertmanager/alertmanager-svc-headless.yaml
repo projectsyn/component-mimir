@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/instance: preset-small
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+    prometheus.io/service-monitor: 'false'
+  name: preset-small-mimir-alertmanager-headless
+  namespace: preset-small
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
+    - name: grpc
+      port: 9095
+      protocol: TCP
+      targetPort: grpc
+    - name: cluster
+      port: 9094
+      protocol: TCP
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/instance: preset-small
+    app.kubernetes.io/name: mimir
+  type: ClusterIP

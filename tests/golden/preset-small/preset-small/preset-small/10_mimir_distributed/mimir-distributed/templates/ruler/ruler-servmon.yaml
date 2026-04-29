@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: ruler
+    app.kubernetes.io/instance: preset-small
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: preset-small-mimir-ruler
+  namespace: preset-small
+spec:
+  endpoints:
+    - port: http-metrics
+      relabelings:
+        - action: replace
+          replacement: preset-small/ruler
+          sourceLabels:
+            - job
+          targetLabel: job
+        - action: replace
+          replacement: preset-small
+          targetLabel: cluster
+      scheme: http
+  namespaceSelector:
+    matchNames:
+      - preset-small
+  selector:
+    matchExpressions:
+      - key: prometheus.io/service-monitor
+        operator: NotIn
+        values:
+          - 'false'
+    matchLabels:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: preset-small
+      app.kubernetes.io/name: mimir

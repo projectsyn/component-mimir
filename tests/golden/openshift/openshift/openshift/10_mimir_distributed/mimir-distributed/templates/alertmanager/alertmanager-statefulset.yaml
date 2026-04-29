@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/instance: openshift
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: openshift-mimir-alertmanager
+  namespace: openshift
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: openshift
+      app.kubernetes.io/name: mimir
+  serviceName: openshift-mimir-alertmanager
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/alertmanager-fallback-config: 93c062766eadc5e8ce3795fa9e58beca2ce9fe90428d9f67f9bda1566cf95afe
+        checksum/config: 6ec4f9b54e105d1649f8ce2b8005dd7dd8641416609c6c0834d985da68b357e6
+      labels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/instance: openshift
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: openshift
+    spec:
+      containers:
+        - args:
+            - -target=alertmanager
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -server.http-idle-timeout=6m
+          envFrom:
+            - secretRef:
+                name: mimir-bucket-secret
+          image: docker.io/grafana/mimir:2.17.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: alertmanager
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              memory: 1.4Gi
+            requests:
+              cpu: 1
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /configs/
+              name: alertmanager-fallback-config
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /active-query-tracker
+              name: active-queries
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: openshift-mimir
+      terminationGracePeriodSeconds: 900
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: alertmanager
+              app.kubernetes.io/instance: openshift
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: openshift-mimir-config
+          name: config
+        - configMap:
+            name: openshift-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: tmp
+        - emptyDir: {}
+          name: active-queries
+        - configMap:
+            name: openshift-mimir-alertmanager-fallback-config
+          name: alertmanager-fallback-config
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
