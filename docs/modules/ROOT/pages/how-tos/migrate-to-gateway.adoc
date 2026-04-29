@@ -2,8 +2,7 @@
 
 [IMPORTANT]
 ====
-The nginx deployment is deprecated and will be removed with Helm chart v7.x.
-It is recommended to migrate to the unified gateway deployment.
+Do this step before you migrate to v4.x of this component!
 ====
 
 You have the following options to migrate to the unified gateway deployment:
@@ -39,14 +38,14 @@ When upgrading to this version of the component, make sure you have nginx and ga
 
 [source,yaml]
 ----
-components:
+helm_values:
   gateway:
     enabled: true <1>
   nginx:
     enabled: true <2>
 ----
-<1> In component v4.x this is enabled by default.
-<2> Enable nginx deployment, this will also keep the ingress associated with the nginx deployment.
+<1> Enable the gateway deployment.
+<2> This should already be enabled.
 
 Compile and push the catalog.
 
@@ -56,7 +55,7 @@ If you want to migrate to the unified gateway deployment but want to keep the se
 
 [source,yaml]
 ----
-components:
+helm_values:
   gateway:
     service:
       nameOverride: mimir-nginx <1>
@@ -73,33 +72,22 @@ The example above is only for illustration.
 
 In the first step we ensured the gateway deployment is present but not yet active, this makes sure the transition to the gateway deployment has the least disruption.
 
-Disable nginx deployment and optionally keep the service name the same as before:
+The nginx deployment will be removed, optionally keep the service name the same as before:
 
 [source,yaml]
 ----
-components:
+helm_values:
   gateway:
     enabled: true <1>
+    ingress: ... <2>
+    nginx:
+      basicAuth: ... <3>
   nginx:
-    enabled: false <2>
+    enabled: false <4>
 ----
-<1> In component v4.x this is enabled by default, you can remove that configuration.
-<2> In component v4.x this is disabled by default, you can remove that configuration.
+<1> Keep the gateway configuration enabled.
+<2> Copy the ingress configuration from nginx.
+<3> Copy the basicAuth configuration from nginx.
+<4> Disable the nginx configuration.
 
 Compile and push the catalog.
-
-
-== (Optional) Keep Nginx Deployment
-
-To stay with the deprecated nginx deployment you need to add the following configuration:
-
-[source,yaml]
-----
-components:
-  gateway:
-    enabled: false <1>
-  nginx:
-    enabled: true <2>
-----
-<1> Disable gateway deployment.
-<2> Enable nginx deployment.

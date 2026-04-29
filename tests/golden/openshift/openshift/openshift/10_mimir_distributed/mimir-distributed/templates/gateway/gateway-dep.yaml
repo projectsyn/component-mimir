@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: openshift
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: openshift-mimir-gateway
   namespace: openshift
 spec:
@@ -27,21 +27,21 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 7208496211bf02edd7bd29fdddd3622261677bd7da45f28a6fbf8fc9e181b7f9
+        checksum/config: 5d2d670b3244a48dc437414572507e62c31713eb13f97046a04dd411b05582f9
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: openshift
     spec:
       containers:
         - envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
           imagePullPolicy: IfNotPresent
           name: gateway
           ports:

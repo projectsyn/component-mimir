@@ -44,10 +44,10 @@ default::
 ----
 mimir-distributed:
   source: https://grafana.github.io/helm-charts
-  version: '4.3.0'
+  version: 'v6.0.6'
 ----
 
-IMPORTANT: This version of the component does not support Helm charts < v5.x!
+IMPORTANT: This version of the component does not support Helm charts < v6.x!
 
 Holds the reference to the used version of the charts.
 See https://github.com/projectsyn/component-mimir/blob/master/class/defaults.yml[class/defaults.yml] for the current version.
@@ -429,7 +429,7 @@ default::
 global:
   zoneAwareReplication:
     enabled: false
-    zones: []
+    topologyKey: 'kubernetes.io/hostname'
 ----
 example::
 +
@@ -452,28 +452,6 @@ global:
 
 Zone-aware replication is the replication of data across failure domains.
 Zone-aware replication helps to avoid data loss during a domain outage. Grafana Mimir defines failure domains as zones.
-
-=== `global.nginxResolverOverride`
-
-[horizontal]
-type:: dict
-default::
-+
-[source,yaml]
-----
-global:
-  nginxResolverOverride: ''
-----
-example::
-+
-[source,yaml]
-----
-global:
-  nginxResolverOverride: '172.30.0.10'
-----
-
-If set, the nginx resolver is set to this value.
-This can be used to insert the static IP of the cluster DNS server, which will fix the case when the resolved DNS service IP changes, but nginx keeps the old IP.
 
 
 == `ingress`

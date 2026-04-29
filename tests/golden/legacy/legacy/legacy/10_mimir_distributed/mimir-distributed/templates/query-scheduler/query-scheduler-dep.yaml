@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: legacy
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: legacy-mimir-query-scheduler
   namespace: legacy
 spec:
@@ -27,24 +27,25 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 36224f74f267a454337c742281ee2eea8798daeaf9bb7826aa69cdf0f1e0caae
+        checksum/config: fbf61c326af47229033286256cb9009c5c78cfc9cef5e65ccb3edc089e7af2c2
       labels:
         app.kubernetes.io/component: query-scheduler
         app.kubernetes.io/instance: legacy
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
     spec:
       containers:
         - args:
             - -target=query-scheduler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
+          env: []
           envFrom:
             - secretRef:
                 name: legacy-bucket-secret
-          image: docker.io/grafana/mimir:2.17.0
+          image: docker.io/grafana/mimir:3.0.4
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: query-scheduler
