@@ -42,7 +42,7 @@ spec:
             - -u 11211
           envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: defaults-bucket-secret
           image: docker.io/library/memcached:1.6.38-alpine
           imagePullPolicy: IfNotPresent
           name: memcached

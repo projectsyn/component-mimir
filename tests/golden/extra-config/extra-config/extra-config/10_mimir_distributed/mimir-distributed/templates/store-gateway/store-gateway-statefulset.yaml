@@ -74,7 +74,7 @@ spec:
               value: '1610612736'
           envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: extra-config-bucket-secret
           image: docker.io/grafana/mimir:latest
           imagePullPolicy: IfNotPresent
           livenessProbe: null
@@ -235,7 +235,7 @@ spec:
               value: '1610612736'
           envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: extra-config-bucket-secret
           image: docker.io/grafana/mimir:latest
           imagePullPolicy: IfNotPresent
           livenessProbe: null
@@ -396,7 +396,7 @@ spec:
               value: '1610612736'
           envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: extra-config-bucket-secret
           image: docker.io/grafana/mimir:latest
           imagePullPolicy: IfNotPresent
           livenessProbe: null

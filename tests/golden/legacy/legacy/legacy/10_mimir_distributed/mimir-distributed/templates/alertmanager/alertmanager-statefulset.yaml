@@ -44,7 +44,7 @@ spec:
             - -server.http-idle-timeout=6m
           envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: legacy-bucket-secret
           image: docker.io/grafana/mimir:2.17.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null

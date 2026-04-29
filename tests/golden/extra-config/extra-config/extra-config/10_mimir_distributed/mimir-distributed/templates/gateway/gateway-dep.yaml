@@ -40,7 +40,7 @@ spec:
       containers:
         - envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: extra-config-bucket-secret
           image: docker.io/nginxinc/nginx-unprivileged:latest
           imagePullPolicy: IfNotPresent
           name: gateway

@@ -40,7 +40,7 @@ spec:
       containers:
         - envFrom:
             - secretRef:
-                name: mimir-bucket-secret
+                name: preset-small-bucket-secret
           image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
           imagePullPolicy: IfNotPresent
           name: gateway
