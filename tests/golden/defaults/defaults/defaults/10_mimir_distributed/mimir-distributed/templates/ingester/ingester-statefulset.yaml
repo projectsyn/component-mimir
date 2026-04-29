@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: defaults-mimir-ingester
+  namespace: defaults
+spec:
+  podManagementPolicy: Parallel
+  replicas: 4
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: defaults
+      app.kubernetes.io/name: mimir
+  serviceName: defaults-mimir-ingester-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 3bb9f3283c67ed563370064e081bb7296dbe28e9e3b7a202a045d17315ae7903
+      labels:
+        app.kubernetes.io/component: ingester
+        app.kubernetes.io/instance: defaults
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: defaults
+    spec:
+      containers:
+        - args:
+            - -target=ingester
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -ingester.ring.instance-availability-zone=zone-default
+            - -server.grpc-max-concurrent-streams=500
+            - -memberlist.abort-if-fast-join-fails=true
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+          envFrom:
+            - secretRef:
+                name: defaults-bucket-secret
+          image: docker.io/grafana/mimir:2.17.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: ingester
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              memory: 16Gi
+            requests:
+              cpu: 1
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: defaults-mimir
+      terminationGracePeriodSeconds: 1200
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: ingester
+              app.kubernetes.io/instance: defaults
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: defaults-mimir-config
+          name: config
+        - configMap:
+            name: defaults-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: active-queries
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi

@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rollout-operator
+    app.kubernetes.io/version: v0.28.0
+    helm.sh/chart: rollout-operator-0.30.0
+  name: defaults-rollout-operator
+  namespace: defaults
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: defaults-rollout-operator
+subjects:
+  - kind: ServiceAccount
+    name: defaults-rollout-operator

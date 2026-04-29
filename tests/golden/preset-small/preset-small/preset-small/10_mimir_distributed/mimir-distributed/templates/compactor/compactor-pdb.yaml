@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/component: compactor
+    app.kubernetes.io/instance: preset-small
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: preset-small-mimir-compactor
+  namespace: preset-small
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: preset-small
+      app.kubernetes.io/name: mimir

@@ -156,7 +156,7 @@ local global = com.makeMergeable({
   global: {
     extraEnvFrom: [ {
       secretRef: {
-        name: 'mimir-bucket-secret',
+        name: '%s-bucket-secret' % inv.parameters._instance,
       },
     } ],
     podAnnotations: {

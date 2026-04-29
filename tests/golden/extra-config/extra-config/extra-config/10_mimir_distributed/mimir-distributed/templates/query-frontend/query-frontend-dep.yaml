@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: query-frontend
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: extra-config-mimir-query-frontend
+  namespace: extra-config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/instance: extra-config
+      app.kubernetes.io/name: mimir
+  strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 4670b8bb89c1afa0d9ed64a75c4fba24eb9fd9399f15edbc12d387bdf1693544
+      labels:
+        app.kubernetes.io/component: query-frontend
+        app.kubernetes.io/instance: extra-config
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: extra-config
+    spec:
+      containers:
+        - args:
+            - -target=query-frontend
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -server.grpc.keepalive.max-connection-age=30s
+            - -shutdown-delay=90s
+          envFrom:
+            - secretRef:
+                name: extra-config-bucket-secret
+          image: docker.io/grafana/mimir:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: query-frontend
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              memory: 2.8Gi
+            requests:
+              cpu: 2
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: extra-config-mimir
+      terminationGracePeriodSeconds: 390
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: query-frontend
+              app.kubernetes.io/instance: extra-config
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: extra-config-mimir-config
+          name: config
+        - configMap:
+            name: extra-config-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: storage
+        - emptyDir: {}
+          name: active-queries

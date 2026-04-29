@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: preset-small
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rollout-operator
+    app.kubernetes.io/version: v0.28.0
+    helm.sh/chart: rollout-operator-0.30.0
+  name: preset-small-rollout-operator
+  namespace: preset-small
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: preset-small-rollout-operator
+subjects:
+  - kind: ServiceAccount
+    name: preset-small-rollout-operator

@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/instance: legacy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+  name: legacy-mimir-alertmanager
+  namespace: legacy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: legacy
+      app.kubernetes.io/name: mimir
+  serviceName: legacy-mimir-alertmanager
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/alertmanager-fallback-config: 299d1ea8da520e3217da73d254ad5878f36cc2b6be49b27eb3b7037d9c3cc460
+        checksum/config: 36224f74f267a454337c742281ee2eea8798daeaf9bb7826aa69cdf0f1e0caae
+      labels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/instance: legacy
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 2.17.0
+        helm.sh/chart: mimir-distributed-5.8.0
+      namespace: legacy
+    spec:
+      containers:
+        - args:
+            - -target=alertmanager
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -server.http-idle-timeout=6m
+          envFrom:
+            - secretRef:
+                name: legacy-bucket-secret
+          image: docker.io/grafana/mimir:2.17.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: alertmanager
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /configs/
+              name: alertmanager-fallback-config
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /active-query-tracker
+              name: active-queries
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: legacy-mimir
+      terminationGracePeriodSeconds: 900
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: alertmanager
+              app.kubernetes.io/instance: legacy
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: legacy-mimir-config
+          name: config
+        - configMap:
+            name: legacy-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: tmp
+        - emptyDir: {}
+          name: active-queries
+        - configMap:
+            name: legacy-mimir-alertmanager-fallback-config
+          name: alertmanager-fallback-config
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

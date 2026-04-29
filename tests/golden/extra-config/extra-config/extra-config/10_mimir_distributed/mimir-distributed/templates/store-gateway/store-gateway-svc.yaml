@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+    name: store-gateway-zone-a
+    rollout-group: store-gateway
+    zone: zone-a
+  name: extra-config-mimir-store-gateway-zone-a
+  namespace: extra-config
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
+    - name: grpc
+      port: 9095
+      protocol: TCP
+      targetPort: grpc
+  selector:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/name: mimir
+    rollout-group: store-gateway
+    zone: zone-a
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+    name: store-gateway-zone-b
+    rollout-group: store-gateway
+    zone: zone-b
+  name: extra-config-mimir-store-gateway-zone-b
+  namespace: extra-config
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
+    - name: grpc
+      port: 9095
+      protocol: TCP
+      targetPort: grpc
+  selector:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/name: mimir
+    rollout-group: store-gateway
+    zone: zone-b
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 2.17.0
+    helm.sh/chart: mimir-distributed-5.8.0
+    name: store-gateway-zone-c
+    rollout-group: store-gateway
+    zone: zone-c
+  name: extra-config-mimir-store-gateway-zone-c
+  namespace: extra-config
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
+    - name: grpc
+      port: 9095
+      protocol: TCP
+      targetPort: grpc
+  selector:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/name: mimir
+    rollout-group: store-gateway
+    zone: zone-c
+  type: ClusterIP

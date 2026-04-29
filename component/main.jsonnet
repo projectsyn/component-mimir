@@ -8,6 +8,10 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.mimir;
 
+// Prevent using non-instantiated configuration of this component
+assert inv.parameters._instance != 'mimir' : "configuring non-instantiated component isn't allowed";
+
+
 local secrets = com.generateResources(
   {
     [if params.ingress.tls.enabled && params.ingress.tls.key != null && params.ingress.tls.cert != null then '%s-tls' % std.strReplace(params.ingress.url, '.', '-')]:
@@ -23,7 +27,7 @@ local secrets = com.generateResources(
           '.htpasswd': params.basicAuth.htpasswd,
         },
       },
-    'mimir-bucket-secret': {
+    ['%s-bucket-secret' % inv.parameters._instance]: {
       stringData: {
         S3_ACCESS_KEY_ID: params.s3.auth.accessKeyId,
         S3_SECRET_ACCESS_KEY: params.s3.auth.secretAccessKey,
