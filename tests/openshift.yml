@@ -1,3 +1,6 @@
+applications:
+  - rollout-operator
+
 parameters:
   kapitan:
     dependencies:
@@ -44,8 +47,6 @@ parameters:
         replicas: 1
         persistentVolume:
           size: 20Gi
-      rolloutOperator:
-        enabled: true
 
     caches:
       results:

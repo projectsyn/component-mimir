@@ -27,9 +27,6 @@ parameters:
       nginx:
         registry: docker.io
         repository: nginxinc/nginx-unprivileged
-      rolloutOperator:
-        registry: docker.io
-        repository: grafana/rollout-operator
 
     preset: extra-small
 
@@ -53,8 +50,6 @@ parameters:
       # Backend
       compactor:
         enabled: true
-      rolloutOperator:
-        enabled: false
       # Ingress
       gateway:
         enabled: true

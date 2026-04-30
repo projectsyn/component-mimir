@@ -16,5 +16,3 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: openshift-mimir
-  - kind: ServiceAccount
-    name: openshift-mimir-distributed
