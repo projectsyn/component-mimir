@@ -78,6 +78,11 @@ parameters:
       zoneAwareReplication:
         enabled: true
 
+    networkPolicy:
+      enabled: false
+      allowedNamespaces:
+        - vshn-grafana
+
     config:
       tenantFederation: true
       haTracker: true
