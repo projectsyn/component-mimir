@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: extra-config-rollout-operator-webhook-role
+  namespace: extra-config
+rules:
+  - apiGroups:
+      - ''
+    resourceNames:
+      - certificate
+    resources:
+      - secrets
+    verbs:
+      - update
+      - get
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - create

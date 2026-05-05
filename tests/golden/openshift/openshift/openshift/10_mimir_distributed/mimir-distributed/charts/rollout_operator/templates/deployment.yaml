@@ -5,13 +5,14 @@ metadata:
     app.kubernetes.io/instance: openshift
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: rollout-operator
-    app.kubernetes.io/version: v0.28.0
-    helm.sh/chart: rollout-operator-0.30.0
+    app.kubernetes.io/version: v0.32.0
+    helm.sh/chart: rollout-operator-0.37.1
   name: openshift-rollout-operator
   namespace: openshift
 spec:
   minReadySeconds: 10
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app.kubernetes.io/instance: openshift
@@ -30,12 +31,18 @@ spec:
       containers:
         - args:
             - -kubernetes.namespace=openshift
-          image: docker.io/grafana/rollout-operator:v0.28.0
+            - -server-tls.enabled=true
+            - -server-tls.self-signed-cert.secret-name=certificate
+            - -server-tls.self-signed-cert.dns-name=openshift-rollout-operator.openshift.svc
+          image: docker.io/grafana/rollout-operator:v0.32.0
           imagePullPolicy: IfNotPresent
           name: rollout-operator
           ports:
             - containerPort: 8001
               name: http-metrics
+              protocol: TCP
+            - containerPort: 8443
+              name: https
               protocol: TCP
           readinessProbe:
             httpGet:

@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: preset-large-mimir-ingester
   namespace: preset-large
 spec:
@@ -25,27 +25,20 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 84fcdb6c2d60115a12adee5de8904fc286ce24193d2270e4d300da1490483d10
+        checksum/config: 9a9f85dce49a4f6831d88abe2aea257340af01462599d3d81b370e224161ea40
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: preset-large
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: preset-large
     spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: target
-                    operator: In
-                    values:
-                      - ingester
-              topologyKey: kubernetes.io/hostname
             - labelSelector:
                 matchExpressions:
                   - key: app.kubernetes.io/component
@@ -67,7 +60,7 @@ spec:
           envFrom:
             - secretRef:
                 name: preset-large-bucket-secret
-          image: docker.io/grafana/mimir:2.17.0
+          image: docker.io/grafana/mimir:3.0.4
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester

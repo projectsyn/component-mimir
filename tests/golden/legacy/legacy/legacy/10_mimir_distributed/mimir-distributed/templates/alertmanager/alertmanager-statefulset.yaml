@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: legacy-mimir-alertmanager
   namespace: legacy
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: 299d1ea8da520e3217da73d254ad5878f36cc2b6be49b27eb3b7037d9c3cc460
-        checksum/config: 36224f74f267a454337c742281ee2eea8798daeaf9bb7826aa69cdf0f1e0caae
+        checksum/alertmanager-fallback-config: b83065cce0d07b11e414991f4949cad288a04eb6f64d5752dbfdd740573cc866
+        checksum/config: fbf61c326af47229033286256cb9009c5c78cfc9cef5e65ccb3edc089e7af2c2
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: legacy
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: legacy
     spec:
       containers:
@@ -42,10 +42,11 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -server.http-idle-timeout=6m
+          env: []
           envFrom:
             - secretRef:
                 name: legacy-bucket-secret
-          image: docker.io/grafana/mimir:2.17.0
+          image: docker.io/grafana/mimir:3.0.4
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager

@@ -35,7 +35,7 @@ local components = com.makeMergeable({
   } + com.makeMergeable(params.components.queryScheduler),
   store_gateway: {
     nodeSelector: std.get(params.components.storeGateway, 'nodeSelector', globalConfig.nodeSelector),
-    zoneAwareReplication: globalConfig.zoneAwareReplication,  // 👈 TODO: think about that
+    zoneAwareReplication: globalConfig.zoneAwareReplication,
   } + com.makeMergeable(params.components.storeGateway),
   // // Write Path
   distributor: {
@@ -43,8 +43,11 @@ local components = com.makeMergeable({
   } + com.makeMergeable(params.components.distributor),
   ingester: {
     nodeSelector: std.get(params.components.ingester, 'nodeSelector', globalConfig.nodeSelector),
-    zoneAwareReplication: globalConfig.zoneAwareReplication,  // 👈 TODO: think about that
+    zoneAwareReplication: globalConfig.zoneAwareReplication,
   } + com.makeMergeable(params.components.ingester),
+  kafka: {
+    nodeSelector: std.get(params.components.kafka, 'nodeSelector', globalConfig.nodeSelector),
+  } + com.makeMergeable(params.components.kafka),
   // Backend
   compactor: {
     nodeSelector: std.get(params.components.compactor, 'nodeSelector', globalConfig.nodeSelector),
@@ -57,9 +60,6 @@ local components = com.makeMergeable({
     [if params.components.gateway.enabled then 'enabledNonEnterprise']: params.components.gateway.enabled,
     nodeSelector: std.get(params.components.gateway, 'nodeSelector', globalConfig.nodeSelector),
   } + com.makeMergeable(params.components.gateway),
-  nginx: {
-    nodeSelector: std.get(params.components.nginx, 'nodeSelector', globalConfig.nodeSelector),
-  } + com.makeMergeable(params.components.nginx),
   // "Optional" components
   alertmanager: {
     nodeSelector: std.get(params.components.alertmanager, 'nodeSelector', globalConfig.nodeSelector),
@@ -126,13 +126,6 @@ local images = com.makeMergeable({
     image: {
       repository: '%(registry)s/%(repository)s' % params.images.memcachedExporter,
       [if std.objectHas(params.images.memcachedExporter, 'tag') then 'tag']: params.images.memcachedExporter.tag,
-    },
-  },
-  nginx: {
-    image: {
-      registry: params.images.nginx.registry,
-      repository: params.images.nginx.repository,
-      [if std.objectHas(params.images.nginx, 'tag') then 'tag']: params.images.nginx.tag,
     },
   },
   gateway: {
@@ -243,53 +236,49 @@ local mimir = com.makeMergeable({
           },
         },
       },
+      // use clasic ingest architecture if kafka is disabled
+      ingest_storage: {
+        enabled: if params.components.kafka.enabled then true else false,
+      },
+      ingester: {
+        push_grpc_method_enabled: if params.components.kafka.enabled then false else true,
+      },
     },
   },
 });
 
 // Mimir Config
-local _ingress = {
-  enabled: params.ingress.enabled,
-  [if params.ingress.tls.enabled && params.ingress.tls.clusterIssuer != null then 'annotations']: {
-    'cert-manager.io/cluster-issuer': params.ingress.tls.clusterIssuer,
-  } + if std.objectHas(params.ingress, 'annotations') then com.makeMergeable(params.ingress.annotations) else {},
-  [if std.objectHas(params.ingress, 'labels') then 'labels']: params.ingress.labels,
-  hosts: [ {
-    host: params.ingress.url,
-    paths: [
-      {
-        path: '/',
-        pathType: 'Prefix',
-      },
-    ],
-  } ],
-  [if params.ingress.tls.enabled then 'tls']: [ {
-    hosts: [ params.ingress.url ],
-    secretName: '%s-tls' % std.strReplace(params.ingress.url, '.', '-'),
-  } ],
-};
-local _basicAuth = {
-  enabled: params.basicAuth.enabled,
-  [if params.basicAuth.htpasswd != null && !std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: '%s-nginx-htpasswd' % inv.parameters._instance,
-  [if std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: params.basicAuth.existingSecret,
-};
-local ingress = com.makeMergeable(
-  if params.components.nginx.enabled then {
+local ingress = com.makeMergeable({
+  [if params.components.gateway.enabled then 'gateway']: {
+    ingress: {
+      enabled: params.ingress.enabled,
+      [if params.ingress.tls.enabled && params.ingress.tls.clusterIssuer != null then 'annotations']: {
+        'cert-manager.io/cluster-issuer': params.ingress.tls.clusterIssuer,
+      } + if std.objectHas(params.ingress, 'annotations') then com.makeMergeable(params.ingress.annotations) else {},
+      [if std.objectHas(params.ingress, 'labels') then 'labels']: params.ingress.labels,
+      hosts: [ {
+        host: params.ingress.url,
+        paths: [
+          {
+            path: '/',
+            pathType: 'Prefix',
+          },
+        ],
+      } ],
+      [if params.ingress.tls.enabled then 'tls']: [ {
+        hosts: [ params.ingress.url ],
+        secretName: '%s-tls' % std.strReplace(params.ingress.url, '.', '-'),
+      } ],
+    },
     nginx: {
-      ingress: _ingress,
-      basicAuth: _basicAuth,
-    },
-  }
-  else if params.components.gateway.enabled then {
-    gateway: {
-      ingress: _ingress,
-      nginx: {
-        basicAuth: _basicAuth,
+      basicAuth: {
+        enabled: params.basicAuth.enabled,
+        [if params.basicAuth.htpasswd != null && !std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: '%s-nginx-htpasswd' % inv.parameters._instance,
+        [if std.objectHas(params.basicAuth, 'existingSecret') then 'existingSecret']: params.basicAuth.existingSecret,
       },
     },
-  }
-  else {}
-);
+  },
+});
 
 
 {

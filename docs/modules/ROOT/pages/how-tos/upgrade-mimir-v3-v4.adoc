@@ -8,19 +8,35 @@ Please have a look at the xref:references/parameters.adoc[parameters documentati
 
 [IMPORTANT]
 ====
-This component will automatically migrate to the unified gateway deployment.
-See xref:how-tos/migrate-to-gateway.adoc[] for further instructions.
-====
-
-[IMPORTANT]
-====
-This component will no longer support Helm charts < v5.x of Mimir.
+This component will no longer support Helm charts < v6.x of Mimir.
 ====
 
 
 == Explanation of configuration changes
 
-=== new namespace naming
+=== Migrate to Unified Gateway Deployment
+
+[IMPORTANT]
+====
+The nginx deployment is deprecated and is removed in Helm chart v6.x.
+It is necessary to migrate to the unified gateway deployment before you upgrade.
+====
+
+See xref:how-tos/migrate-to-gateway.adoc[] for further instructions.
+
+=== (Optional) Consider disabling Zone Aware Replication
+
+[IMPORTANT]
+====
+This version of the component disables zone aware replication by default, because the rollout-operator in this version of the component *installs CRDs* for certain functionalities.
+
+That can be a problem, when more than 1 instance of this component is installed.
+We recommend disabling zone aware replication, unless you need this feature and have a cluster that actually has multiple availability zones enabled.
+====
+
+See xref:references/parameters.adoc#_global[global configuration] for reference.
+
+=== New Namespace Naming
 
 [IMPORTANT]
 ====
@@ -53,7 +69,7 @@ parameters:
 <2> Rename the component configuration as your new instance name.
 <3> Overwrite the default namespace name.
 
-=== new default resource requests
+=== New Default Resource Requests
 
 [IMPORTANT]
 ====
@@ -81,7 +97,19 @@ This change is backward compatible, but migrating the values to the new structur
 
 The values for the nginx dns resolver override has moved to `global.nginxResolverOverride`.
 
-[TIP]
-====
-This change is backward compatible, but migrating the values to the new structure is recommended.
-====
+This version of the component uses the gateway deployment, if you still need this configuration use:
+
+[source,yaml]
+----
+applications:
+  - mimir as your-new-instance-name
+
+parameters:
+  your-new-instance-name
+    components:
+      gateway:
+        nginx:
+          config:
+            resolver: 172.30.0.10 <1>
+----
+<1> Configure the resolver override.
