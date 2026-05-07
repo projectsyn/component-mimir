@@ -35,7 +35,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 17d7d1b1f5a490f9d399f81e614c44c65e550692b3b5fcc3605d762a2908f577
+        checksum/config: 18eb15c3019372704d01a2be044283775814c965f37f6c4423c8a622c10bfae1
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config
@@ -198,7 +198,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 17d7d1b1f5a490f9d399f81e614c44c65e550692b3b5fcc3605d762a2908f577
+        checksum/config: 18eb15c3019372704d01a2be044283775814c965f37f6c4423c8a622c10bfae1
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config
@@ -361,7 +361,7 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 17d7d1b1f5a490f9d399f81e614c44c65e550692b3b5fcc3605d762a2908f577
+        checksum/config: 18eb15c3019372704d01a2be044283775814c965f37f6c4423c8a622c10bfae1
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config

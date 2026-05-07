@@ -219,7 +219,6 @@ local mimir = com.makeMergeable({
       [if params.config.haTracker then 'distributor']: {
         ha_tracker: {
           enable_ha_tracker: true,
-          ha_tracker_failover_timeout: '60s',
           kvstore: {
             // prefix: '%s/' % inv.parameters._instance,  // 👈 TODO: think about that
             store: params.config.haStore.type,
