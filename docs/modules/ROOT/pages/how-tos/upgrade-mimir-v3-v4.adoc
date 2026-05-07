@@ -97,7 +97,7 @@ This change is backward compatible, but migrating the values to the new structur
 
 The values for the nginx dns resolver override has moved to `global.nginxResolverOverride`.
 
-This version of the component uses the gateway deployment, if you still need this configuration use:
+This version of the component uses the gateway deployment, but if you still need to override the gateway/nginx resolver, you can now do so through a Helm chart value:
 
 [source,yaml]
 ----

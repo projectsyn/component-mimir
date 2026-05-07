@@ -236,7 +236,7 @@ local mimir = com.makeMergeable({
           },
         },
       },
-      // use clasic ingest architecture if kafka is disabled
+      // use classic ingest architecture if kafka is disabled
       ingest_storage: {
         enabled: if params.components.kafka.enabled then true else false,
       },
