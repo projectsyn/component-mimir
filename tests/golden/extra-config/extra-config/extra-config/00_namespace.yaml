@@ -4,10 +4,7 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name:
-      create: true
-      metadata: {}
-      name: extra-config
+    app.kubernetes.io/name: extra-config
     name: extra-config
     rollout-operator.syn.tools/allow: ''
   name: extra-config
