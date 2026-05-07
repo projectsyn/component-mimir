@@ -64,7 +64,6 @@ data:
     distributor:
       ha_tracker:
         enable_ha_tracker: true
-        ha_tracker_failover_timeout: 60s
         kvstore:
           etcd:
             endpoints:
