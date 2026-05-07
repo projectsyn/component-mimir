@@ -50,6 +50,10 @@ parameters:
       gateway:
         service:
           nameOverride: mimir-nginx
+      kafka:
+        enabled: true
+      rolloutOperator:
+        enabled: true
 
     caches:
       results:
@@ -74,13 +78,6 @@ parameters:
         appuio.io/node-class: plus
       zoneAwareReplication:
         enabled: true
-        zones:
-          - name: zone-a
-            nodeSelector: {}
-          - name: zone-b
-            nodeSelector: {}
-          - name: zone-c
-            nodeSelector: {}
       nginxResolverOverride: '172.30.0.10'
 
     config:

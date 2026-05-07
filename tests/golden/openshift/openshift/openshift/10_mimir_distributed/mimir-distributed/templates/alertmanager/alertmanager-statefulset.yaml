@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: openshift-mimir-alertmanager
   namespace: openshift
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: 93c062766eadc5e8ce3795fa9e58beca2ce9fe90428d9f67f9bda1566cf95afe
-        checksum/config: 6ec4f9b54e105d1649f8ce2b8005dd7dd8641416609c6c0834d985da68b357e6
+        checksum/alertmanager-fallback-config: 04f100ffd4487b715402346275cbfbbf31631bc317501264726d2ee0a3ac6a9d
+        checksum/config: 0af2a25c1c29bb140a4d88feb8e7231befdc38f0ab8a2eab37f97011eb854d9b
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: openshift
     spec:
       containers:
@@ -42,10 +42,11 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -server.http-idle-timeout=6m
+          env: []
           envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/grafana/mimir:2.17.0
+          image: docker.io/grafana/mimir:3.0.4
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager

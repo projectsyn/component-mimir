@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: openshift-rollout-operator-webhook-role
+  namespace: openshift
+rules:
+  - apiGroups:
+      - ''
+    resourceNames:
+      - certificate
+    resources:
+      - secrets
+    verbs:
+      - update
+      - get
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - create

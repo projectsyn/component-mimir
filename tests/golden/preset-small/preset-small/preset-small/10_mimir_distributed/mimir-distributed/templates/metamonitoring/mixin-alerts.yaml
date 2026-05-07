@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: preset-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: preset-small-mimir-alerts
   namespace: preset-small
 spec:
@@ -99,18 +99,6 @@ spec:
           expr: |
             # The metric value is reset to 0 on error while reloading the config at runtime.
             cortex_runtime_config_last_reload_successful == 0
-          for: 5m
-          labels:
-            severity: critical
-            syn: 'true'
-            syn_component: preset-small
-        - alert: SYN_MimirFrontendQueriesStuck
-          annotations:
-            message: |
-              There are {{ $value }} queued up queries in {{ $labels.cluster }}/{{ $labels.namespace }} {{ $labels.job }}.
-            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#mimirfrontendqueriesstuck
-          expr: |
-            sum by (cluster, namespace, job) (min_over_time(cortex_query_frontend_queue_length[1m])) > 0
           for: 5m
           labels:
             severity: critical
@@ -326,6 +314,19 @@ spec:
           for: 15m
           labels:
             component: ingester
+            severity: warning
+            syn: 'true'
+            syn_component: preset-small
+        - alert: SYN_MimirHighGRPCConcurrentStreamsPerConnection
+          annotations:
+            message: |
+              Container {{ $labels.container }} in {{ $labels.cluster }}/{{ $labels.namespace }} is experiencing high GRPC concurrent streams per connection.
+            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#mimirhighgrpcconcurrentstreamsperconnection
+          expr: |
+            max(avg_over_time(grpc_concurrent_streams_by_conn_max[10m])) by (cluster, namespace, container)
+            /
+            min(cortex_grpc_concurrent_streams_limit) by (cluster, namespace, container) > 0.9
+          labels:
             severity: warning
             syn: 'true'
             syn_component: preset-small
@@ -773,40 +774,6 @@ spec:
             severity: critical
             syn: 'true'
             syn_component: preset-small
-    - name: etcd_alerts
-      rules:
-        - alert: SYN_EtcdAllocatingTooMuchMemory
-          annotations:
-            message: |
-              Too much memory being used by {{ $labels.namespace }}/{{ $labels.pod }} - bump memory limit.
-            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#etcdallocatingtoomuchmemory
-          expr: |
-            (
-              container_memory_rss{container="etcd"}
-                /
-              ( container_spec_memory_limit_bytes{container="etcd"} > 0 )
-            ) > 0.65
-          for: 15m
-          labels:
-            severity: warning
-            syn: 'true'
-            syn_component: preset-small
-        - alert: SYN_EtcdAllocatingTooMuchMemory
-          annotations:
-            message: |
-              Too much memory being used by {{ $labels.namespace }}/{{ $labels.pod }} - bump memory limit.
-            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#etcdallocatingtoomuchmemory
-          expr: |
-            (
-              container_memory_rss{container="etcd"}
-                /
-              ( container_spec_memory_limit_bytes{container="etcd"} > 0 )
-            ) > 0.8
-          for: 15m
-          labels:
-            severity: critical
-            syn: 'true'
-            syn_component: preset-small
     - name: golang_alerts
       rules:
         - alert: SYN_MimirGoThreadsTooHigh
@@ -911,7 +878,7 @@ spec:
           expr: |
             increase(cortex_alertmanager_state_initial_sync_completed_total{outcome="failed"}[1m]) > 0
           labels:
-            severity: critical
+            severity: warning
             syn: 'true'
             syn_component: preset-small
         - alert: SYN_MimirAlertmanagerAllocatingTooMuchMemory
@@ -980,7 +947,7 @@ spec:
             (max by(cluster, namespace, pod) (max_over_time(cluster_namespace_pod:cortex_ingester_ingested_samples_total:rate1m[1h] offset 4h)) > 0)
             # And only if blocks aren't shipped by the block-builder.
             unless on (cluster, namespace)
-            (max by (cluster, namespace) (cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds) > 0)
+            (max by (cluster, namespace) (max_over_time(cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds[30m])) > 0)
           for: 15m
           labels:
             severity: critical
@@ -997,7 +964,7 @@ spec:
             (max by(cluster, namespace, pod) (max_over_time(cluster_namespace_pod:cortex_ingester_ingested_samples_total:rate1m[4h])) > 0)
             # Only if blocks aren't shipped by the block-builder.
             unless on (cluster, namespace)
-            (max by (cluster, namespace) (cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds) > 0)
+            (max by (cluster, namespace) (max_over_time(cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds[30m])) > 0)
           for: 4h
           labels:
             severity: critical
@@ -1015,7 +982,7 @@ spec:
             (cortex_ingester_oldest_unshipped_block_timestamp_seconds > 0)
             # Only if blocks aren't shipped by the block-builder.
             unless on (cluster, namespace)
-            (max by (cluster, namespace) (cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds) > 0)
+            (max by (cluster, namespace) (max_over_time(cortex_blockbuilder_tsdb_last_successful_compact_and_upload_timestamp_seconds[30m])) > 0)
           for: 15m
           labels:
             severity: critical
@@ -1591,40 +1558,16 @@ spec:
             severity: critical
             syn: 'true'
             syn_component: preset-small
-        - alert: SYN_MimirBlockBuilderLagging
+        - alert: SYN_MimirBlockBuilderSchedulerPendingJobs
           annotations:
             message: Mimir {{ $labels.pod }} in {{ $labels.cluster }}/{{ $labels.namespace
-              }} reports partition lag of {{ printf "%.2f" $value }}.
-            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#mimirblockbuilderlagging
+              }} reports {{ printf "%.2f" $value }} pending jobs.
+            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#mimirblockbuilderschedulerpendingjobs
           expr: |
-            max by(cluster, namespace, pod) (
-            max_over_time(
-            (
-            cortex_blockbuilder_scheduler_partition_end_offset offset 1h
-            -
-            cortex_blockbuilder_scheduler_partition_committed_offset
-            )[10m:])) > 4e6
-          for: 75m
+            sum by (cluster, namespace, pod) (cortex_blockbuilder_scheduler_pending_jobs) > 0
+          for: 40m
           labels:
             severity: warning
-            syn: 'true'
-            syn_component: preset-small
-        - alert: SYN_MimirBlockBuilderLagging
-          annotations:
-            message: Mimir {{ $labels.pod }} in {{ $labels.cluster }}/{{ $labels.namespace
-              }} reports partition lag of {{ printf "%.2f" $value }}.
-            runbook_url: https://grafana.com/docs/mimir/latest/operators-guide/mimir-runbooks/#mimirblockbuilderlagging
-          expr: |
-            max by(cluster, namespace, pod) (
-            max_over_time(
-            (
-            cortex_blockbuilder_scheduler_partition_end_offset offset 1h
-            -
-            cortex_blockbuilder_scheduler_partition_committed_offset
-            )[10m:])) > 4e6
-          for: 140m
-          labels:
-            severity: critical
             syn: 'true'
             syn_component: preset-small
         - alert: SYN_MimirBlockBuilderCompactAndUploadFailed

@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: preset-small-mimir-alertmanager
   namespace: preset-small
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: 15cd7a9eaf8c3d3d16301c82a666dc01dbcd22201568a4b1f9f9d66e52a627c7
-        checksum/config: 4b07a181c6d228c90ed777de5e1bf405485f83e1df70282f3200edff9a6a642a
+        checksum/alertmanager-fallback-config: 75b3ce2b5e91ae02b642e47ccd4b3c49b5ea98ee89080ae8aaf073902b29c719
+        checksum/config: ace61922d472e175963238613718ee64cfa5e011ca2a57fa7ab2f06ed594b9e8
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: preset-small
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: preset-small
     spec:
       containers:
@@ -42,10 +42,11 @@ spec:
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
             - -server.http-idle-timeout=6m
+          env: []
           envFrom:
             - secretRef:
                 name: preset-small-bucket-secret
-          image: docker.io/grafana/mimir:2.17.0
+          image: docker.io/grafana/mimir:3.0.4
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager

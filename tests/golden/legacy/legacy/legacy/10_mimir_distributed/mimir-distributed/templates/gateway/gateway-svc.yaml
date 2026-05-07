@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: legacy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
+  name: legacy-mimir-gateway
+  namespace: legacy
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: http-metrics
+      port: 80
+      protocol: TCP
+      targetPort: http-metrics
+    - name: legacy-http-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: http-metrics
+  selector:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: legacy
+    app.kubernetes.io/name: mimir
+  type: ClusterIP

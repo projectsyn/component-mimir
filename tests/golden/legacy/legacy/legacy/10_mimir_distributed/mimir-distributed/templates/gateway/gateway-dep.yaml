@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: legacy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
+  name: legacy-mimir-gateway
+  namespace: legacy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: gateway
+      app.kubernetes.io/instance: legacy
+      app.kubernetes.io/name: mimir
+  strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 82138643be316b75894d47082a8a0f1179ecdf0fb8fb9e7e055a307fe5c0843f
+      labels:
+        app.kubernetes.io/component: gateway
+        app.kubernetes.io/instance: legacy
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
+      namespace: legacy
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: legacy-bucket-secret
+          image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
+          imagePullPolicy: IfNotPresent
+          name: gateway
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 731Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-config
+              subPath: nginx.conf
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /docker-entrypoint.d
+              name: docker-entrypoint-d-override
+      nodeSelector:
+        appuio.io/node-class: plus
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: legacy-mimir
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: gateway
+              app.kubernetes.io/instance: legacy
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: legacy-mimir-config
+          name: config
+        - configMap:
+            name: legacy-mimir-runtime
+          name: runtime-config
+        - configMap:
+            name: legacy-mimir-gateway-nginx
+          name: nginx-config
+        - emptyDir: {}
+          name: docker-entrypoint-d-override
+        - emptyDir: {}
+          name: tmp

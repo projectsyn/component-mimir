@@ -1,0 +1,40 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  labels:
+    app.kubernetes.io/instance: extra-config
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rollout-operator
+    app.kubernetes.io/version: v0.32.0
+    grafana.com/inject-rollout-operator-ca: 'true'
+    grafana.com/namespace: extra-config
+    helm.sh/chart: rollout-operator-0.37.1
+  name: prepare-downscale-extra-config
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: extra-config-rollout-operator
+        namespace: extra-config
+        path: /admission/prepare-downscale
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: prepare-downscale-extra-config.grafana.com
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: extra-config
+    rules:
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - statefulsets
+          - statefulsets/scale
+        scope: Namespaced
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10

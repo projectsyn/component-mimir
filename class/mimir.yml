@@ -1,6 +1,5 @@
 parameters:
   kapitan:
-
     dependencies:
       - type: helm
         source: ${mimir:charts:mimir-distributed:source}
@@ -41,9 +40,6 @@ parameters:
   commodore:
     postprocess:
       filters:
-        - type: jsonnet
-          filter: postprocess/fixup-resolver.jsonnet
-          path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/nginx
         - type: jsonnet
           filter: postprocess/patch-alerts.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/metamonitoring

@@ -76,6 +76,7 @@ data:
             tls_insecure_skip_verify: true
             username: root
           store: etcd
+      remote_timeout: 5s
       ring:
         heartbeat_period: 1m
         heartbeat_timeout: 4m
@@ -94,7 +95,15 @@ data:
       grpc_client_config:
         max_send_msg_size: 419430400
       scheduler_address: extra-config-mimir-query-scheduler-headless.extra-config.svc:9095
+    ingest_storage:
+      enabled: true
+      kafka:
+        address: extra-config-mimir-kafka.extra-config.svc.cluster.local.:9092
+        auto_create_topic_default_partitions: 100
+        auto_create_topic_enabled: true
+        topic: mimir-ingest
     ingester:
+      push_grpc_method_enabled: false
       ring:
         final_sleep: 0s
         heartbeat_period: 2m
@@ -164,7 +173,7 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: extra-config-mimir-config
   namespace: extra-config

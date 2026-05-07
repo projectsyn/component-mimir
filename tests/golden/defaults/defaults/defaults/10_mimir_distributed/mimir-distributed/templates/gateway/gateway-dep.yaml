@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.17.0
-    helm.sh/chart: mimir-distributed-5.8.0
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
   name: defaults-mimir-gateway
   namespace: defaults
 spec:
@@ -27,21 +27,21 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 16fc45486092c137d1a8e4fbdf27675202f370d875bfbe18a4bd84a2cfdd7b60
+        checksum/config: 24d88713a239ca976beda8cff5c10d824bc3f4eab263f58dc4736d8eba835e1a
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: defaults
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.17.0
-        helm.sh/chart: mimir-distributed-5.8.0
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
       namespace: defaults
     spec:
       containers:
         - envFrom:
             - secretRef:
                 name: defaults-bucket-secret
-          image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
+          image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
           imagePullPolicy: IfNotPresent
           name: gateway
           ports:

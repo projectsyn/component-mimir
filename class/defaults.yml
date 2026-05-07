@@ -12,7 +12,7 @@ parameters:
     charts:
       mimir-distributed:
         source: https://grafana.github.io/helm-charts
-        version: v5.8.0
+        version: v6.0.6
 
     images:
       mimir:
@@ -43,27 +43,24 @@ parameters:
         enabled: true
       storeGateway:
         enabled: true
-        storage: {}
       # Write Path
       distributor:
         enabled: true
       ingester:
         enabled: true
-        storage: {}
+      kafka:
+        enabled: false
       # Backend
       compactor:
         enabled: true
       rolloutOperator:
-        enabled: true
+        enabled: false
       # Ingress
       gateway:
         enabled: true
-      nginx:
-        enabled: false
       # Optional
       alertmanager:
         enabled: true
-        storage: {}
       overridesExporter:
         enabled: true
       ruler:
@@ -83,9 +80,7 @@ parameters:
       nodeSelector: {}
       zoneAwareReplication:
         enabled: false
-        zones: []
-      # Allows overriding the resolver for the mimir-distributed chart, if using nginx as the frontend.
-      nginxResolverOverride: ''
+        topologyKey: 'kubernetes.io/hostname'
 
     s3:
       bucketPrefix: ${_instance}

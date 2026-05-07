@@ -44,6 +44,8 @@ parameters:
         replicas: 1
         persistentVolume:
           size: 20Gi
+      rolloutOperator:
+        enabled: true
 
     caches:
       results:
@@ -66,13 +68,6 @@ parameters:
     global:
       zoneAwareReplication:
         enabled: true
-        zones:
-          - name: zone-a
-            nodeSelector: {}
-          - name: zone-b
-            nodeSelector: {}
-          - name: zone-c
-            nodeSelector: {}
 
     ingress:
       enabled: true
