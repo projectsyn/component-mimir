@@ -4,10 +4,7 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name:
-      create: true
-      metadata: {}
-      name: openshift
+    app.kubernetes.io/name: openshift
     name: openshift
     rollout-operator.syn.tools/allow: ''
   name: openshift

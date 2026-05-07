@@ -4,9 +4,6 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name:
-      create: true
-      metadata: {}
-      name: preset-small
+    app.kubernetes.io/name: preset-small
     name: preset-small
   name: preset-small

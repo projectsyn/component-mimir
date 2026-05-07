@@ -83,7 +83,7 @@ local netpols = kube.NetworkPolicy('allow-from-other-namespaces') {
     metadata+: {
       labels+: {
         'app.kubernetes.io/managed-by': 'commodore',
-        'app.kubernetes.io/name': params.namespace,
+        'app.kubernetes.io/name': params.namespace.name,
         [if params.global.zoneAwareReplication.enabled then 'rollout-operator.syn.tools/allow']: '',
       },
     } + com.makeMergeable(params.namespace.metadata),
