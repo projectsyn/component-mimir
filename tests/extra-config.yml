@@ -1,4 +1,7 @@
 # Overwrite parameters here
+applications:
+  - rollout-operator
+
 parameters:
   kapitan:
     dependencies:
@@ -22,8 +25,6 @@ parameters:
       memcachedExporter:
         tag: latest
       nginx:
-        tag: latest
-      rolloutOperator:
         tag: latest
 
     preset: small
@@ -52,8 +53,6 @@ parameters:
           nameOverride: mimir-nginx
       kafka:
         enabled: true
-      rolloutOperator:
-        enabled: true
 
     caches:
       results:
@@ -78,7 +77,6 @@ parameters:
         appuio.io/node-class: plus
       zoneAwareReplication:
         enabled: true
-      nginxResolverOverride: '172.30.0.10'
 
     config:
       tenantFederation: true

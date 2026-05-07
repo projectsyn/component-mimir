@@ -43,6 +43,3 @@ parameters:
         - type: jsonnet
           filter: postprocess/patch-alerts.jsonnet
           path: ${_instance}/10_mimir_distributed/mimir-distributed/templates/metamonitoring
-        - type: jsonnet
-          filter: postprocess/fixup-securitycontext.jsonnet
-          path: ${_instance}/10_mimir_distributed/mimir-distributed/charts/rollout_operator/templates

@@ -5,6 +5,7 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.mimir;
 local isOpenshift = std.member([ 'openshift4', 'oke' ], inv.parameters.facts.distribution);
+local hasRolloutOperator = std.member(inv.applications, 'rollout-operator');
 
 local s3endpoint =
   if params.s3.endpoint != null then
@@ -19,7 +20,12 @@ local s3endpoint =
 // Global Params and Zone Aware Replication
 local globalConfig = params.global + com.makeMergeable({
   nodeSelector: std.get(params, 'globalNodeSelector', params.global.nodeSelector),
-  zoneAwareReplication: params.global.zoneAwareReplication,
+  zoneAwareReplication: params.global.zoneAwareReplication {
+    enabled: if params.global.zoneAwareReplication.enabled then
+      // Assert that zone aware replication is only enabled if rollout-operator is installed
+      if hasRolloutOperator then true else error 'rollout-operator must be installed for zone-aware replication'
+    else false,
+  },
 });
 
 local components = com.makeMergeable({
@@ -52,9 +58,6 @@ local components = com.makeMergeable({
   compactor: {
     nodeSelector: std.get(params.components.compactor, 'nodeSelector', globalConfig.nodeSelector),
   } + com.makeMergeable(params.components.compactor),
-  rollout_operator: {
-    nodeSelector: std.get(params.components.rolloutOperator, 'nodeSelector', globalConfig.nodeSelector),
-  } + com.makeMergeable(params.components.rolloutOperator),
   // Ingress Configuration
   gateway: {
     [if params.components.gateway.enabled then 'enabledNonEnterprise']: params.components.gateway.enabled,
@@ -102,6 +105,7 @@ local openshift = if isOpenshift then com.makeMergeable({
       runAsUser: null,
     },
   },
+  // even when we don't deploy the rollout-operator, we need to define the pod security context
   rollout_operator: {
     podSecurityContext: {
       fsGroup: null,
@@ -137,12 +141,6 @@ local images = com.makeMergeable({
       },
     },
   },
-  rollout_operator: {
-    image: {
-      repository: '%(registry)s/%(repository)s' % params.images.rolloutOperator,
-      [if std.objectHas(params.images.rolloutOperator, 'tag') then 'tag']: params.images.rolloutOperator.tag,
-    },
-  },
 });
 
 local global = com.makeMergeable({
@@ -155,9 +153,6 @@ local global = com.makeMergeable({
     podAnnotations: {
       bucketSecretVersion: '%s' % params.s3.auth.secretVersion,
     },
-  },
-  minio: {
-    enabled: false,
   },
   [if params.monitoring then 'metaMonitoring']: {
     serviceMonitor: {
@@ -280,9 +275,28 @@ local ingress = com.makeMergeable({
   },
 });
 
+// hardcoded removal of rollout-operator
+local hardRestrictions = com.makeMergeable({
+  minio: {
+    enabled: false,
+  },
+  rollout_operator: {
+    enabled: false,
+  },
+  store_gateway: {
+    zoneAwareReplication: {
+      enabled: if hasRolloutOperator && params.global.zoneAwareReplication.enabled then true else false,
+    },
+  },
+  ingester: {
+    zoneAwareReplication: {
+      enabled: if hasRolloutOperator && params.global.zoneAwareReplication.enabled then true else false,
+    },
+  },
+});
 
 {
   ['%s-components' % inv.parameters._instance]: components + caches,
   ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir + ingress,
-  ['%s-overrides' % inv.parameters._instance]: params.helm_values,
+  ['%s-overrides' % inv.parameters._instance]: params.helm_values + hardRestrictions,
 }

@@ -74,9 +74,6 @@ images:
   nginx:
     registry: docker.io
     repository: nginxinc/nginx-unprivileged
-  rolloutOperator:
-    registry: docker.io
-    repository: grafana/rollout-operator
 ----
 example::
 +
@@ -91,8 +88,6 @@ images:
   memcachedExporter:
     tag: latest
   nginx:
-    tag: latest
-  rolloutOperator:
     tag: latest
 ----
 
@@ -192,7 +187,6 @@ default::
 components:
   storeGateway:
     enabled: true
-    storage: {}
 ----
 
 The store-gateway component, which is stateful, queries blocks from long-term storage.
@@ -226,12 +220,43 @@ default::
 components:
   ingester:
     enabled: true
-    storage: {}
 ----
 
 The ingester is a stateful component that processes the most recently ingested samples and makes them available for querying.
 Queriers read recent data from ingesters and older data from long-term object storage via store-gateways.
 
+=== `components.kafka`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  kafka:
+    enabled: false
+----
+
+Grafana Mimir supports using Kafka as the first layer of ingestion in the ingest storage architecture.
+This configuration allows for scalable, decoupled ingestion that separates write and read paths to improve performance and resilience.
+
+
+=== `components.gateway`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+components:
+  gateway:
+    enabled: true
+----
+
+The Mimir unified gateway is a critical component for query, write, and alert paths.
+It improves performance and simplifies deployments by acting as a single entry point for all Mimir requests.
 
 === `components.compactor`
 
@@ -252,19 +277,6 @@ Compacting multiple blocks of a given tenant into a single, optimized larger blo
 This deduplicates chunks and reduces the size of the index, resulting in reduced storage costs.
 Querying fewer blocks is faster, so it also increases query speed.
 
-=== `components.rolloutOperator`
-
-[horizontal]
-type:: dict
-default::
-+
-[source,yaml]
-----
-components:
-  rolloutOperator:
-    enabled: true
-----
-
 
 === `components.alertmanager`
 
@@ -277,13 +289,8 @@ default::
 components:
   alertmanager:
     enabled: true
-      overridesExporter:
-        enabled: true
-      ruler:
-        enabled: true
 ----
 
-The Mimir Alertmanager adds multi-tenancy support and horizontal scalability to the Prometheus Alertmanager.
 The Mimir Alertmanager is an optional component that accepts alert notifications from the Mimir ruler.
 
 === `components.overridesExporter`
@@ -828,7 +835,7 @@ secrets:
       .htpasswd: "?{vaultkv:${cluster:tenant}/${cluster:name}/example-mimir/htpasswd}"
 
 helm_values:
-  nginx:
+  gateway:
     basicAuth:
       enabled: true
       existingSecret: mimir-nginx-htpasswd

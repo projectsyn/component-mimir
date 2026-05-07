@@ -36,6 +36,10 @@ local secrets = com.generateResources(
   } + com.makeMergeable(params.secrets),
   function(name) kube.Secret(name) {
     metadata+: {
+      labels+: {
+        'app.kubernetes.io/managed-by': 'commodore',
+        'app.kubernetes.io/name': name,
+      },
       namespace: params.namespace.name,
     },
   }
@@ -45,7 +49,13 @@ local secrets = com.generateResources(
 // Define outputs below
 {
   [if params.namespace.create then '00_namespace']: kube.Namespace(params.namespace.name) {
-    metadata+: com.makeMergeable(params.namespace.metadata),
+    metadata+: {
+      labels+: {
+        'app.kubernetes.io/managed-by': 'commodore',
+        'app.kubernetes.io/name': params.namespace,
+        [if params.global.zoneAwareReplication.enabled then 'rollout-operator.syn.tools/allow']: '',
+      },
+    } + com.makeMergeable(params.namespace.metadata),
   },
   '01_secrets': secrets,
   // Empty file to make sure the directory is created. Later used in patching alerts.
@@ -53,6 +63,10 @@ local secrets = com.generateResources(
 
   '20_prometheus_rule': prom.generateRules('mimir-custom', { 'mimir-custom.rules': params.alerts.additionalRules }) {
     metadata+: {
+      labels+: {
+        'app.kubernetes.io/managed-by': 'commodore',
+        'app.kubernetes.io/name': 'mimir-custom',
+      },
       namespace: params.namespace.name,
     },
   },
