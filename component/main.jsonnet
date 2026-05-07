@@ -45,6 +45,37 @@ local secrets = com.generateResources(
   }
 );
 
+local netpols = kube.NetworkPolicy('allow-from-other-namespaces') {
+  metadata+: {
+    labels+: {
+      'app.kubernetes.io/managed-by': 'commodore',
+      'app.kubernetes.io/name': 'allow-from-other-namespaces',
+    },
+    namespace: params.namespace.name,
+  },
+  spec: {
+    policyTypes: [ 'Ingress' ],
+    [if std.length(params.networkPolicy.exposedComponents) > 0 then 'podSelector']: {
+      matchExpressions: [ {
+        key: 'app.kubernetes.io/component',
+        operator: 'In',
+        values: com.renderArray(params.networkPolicy.exposedComponents),
+      } ],
+    },
+    ingress: [ {
+      from: [ {
+        namespaceSelector: {
+          matchExpressions: [ {
+            key: 'kubernetes.io/metadata.name',
+            operator: 'In',
+            values: com.renderArray(params.networkPolicy.allowedNamespaces),
+          } ],
+        },
+      } ],
+    } ],
+  },
+};
+
 
 // Define outputs below
 {
@@ -70,4 +101,6 @@ local secrets = com.generateResources(
       namespace: params.namespace.name,
     },
   },
+
+  [if params.networkPolicy.enabled && std.length(params.networkPolicy.allowedNamespaces) > 0 then '30_network_policies']: netpols,
 }
