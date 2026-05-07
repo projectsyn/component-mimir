@@ -20,7 +20,12 @@ local s3endpoint =
 // Global Params and Zone Aware Replication
 local globalConfig = params.global + com.makeMergeable({
   nodeSelector: std.get(params, 'globalNodeSelector', params.global.nodeSelector),
-  zoneAwareReplication: if hasRolloutOperator then params.global.zoneAwareReplication else std.trace('rollout-operator must be installed', {}),
+  zoneAwareReplication: params.global.zoneAwareReplication {
+    enabled: if params.global.zoneAwareReplication.enabled then
+      // Assert that zone aware replication is only enabled if rollout-operator is installed
+      if hasRolloutOperator then true else error 'rollout-operator must be installed for zone-aware replication'
+    else false,
+  },
 });
 
 local components = com.makeMergeable({
@@ -271,7 +276,7 @@ local ingress = com.makeMergeable({
 });
 
 // hardcoded removal of rollout-operator
-local hardNope = com.makeMergeable({
+local hardRestrictions = com.makeMergeable({
   minio: {
     enabled: false,
   },
@@ -293,5 +298,5 @@ local hardNope = com.makeMergeable({
 {
   ['%s-components' % inv.parameters._instance]: components + caches,
   ['%s-configs' % inv.parameters._instance]: openshift + images + global + mimir + ingress,
-  ['%s-overrides' % inv.parameters._instance]: params.helm_values + hardNope,
+  ['%s-overrides' % inv.parameters._instance]: params.helm_values + hardRestrictions,
 }
