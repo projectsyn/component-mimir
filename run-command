@@ -8,6 +8,9 @@ set -e
 # Kapitan provides a fairly standard PATH variable, we add /opt/homebrew/bin for macOS
 export PATH="${PATH}:/opt/homebrew/bin"
 
-patch=$(which patch) || (>&2 echo "patch not found in ${PATH}"; exit 7)
+cmdname="${1}"
+shift
 
-exec "$patch" "${@}"
+cmd=$(which "${cmdname}") || (>&2 echo "${cmdname} not found in ${PATH}"; exit 7)
+
+exec "$cmd" "${@}"

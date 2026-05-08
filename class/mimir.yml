@@ -18,6 +18,14 @@ parameters:
         output_path: ${_instance}/
 
       # Helm chart
+      - input_type: external
+        input_paths:
+          - ${_base_directory}/run-command
+        args:
+          - rm
+          - -f
+          - ${_base_directory}/helmcharts/mimir-distributed/${mimir:charts:mimir-distributed:version}/templates/gateway/gateway-servmon.yaml
+        output_path: .
       - input_type: jsonnet
         input_paths:
           - ${_base_directory}/component/helm_presets.jsonnet
