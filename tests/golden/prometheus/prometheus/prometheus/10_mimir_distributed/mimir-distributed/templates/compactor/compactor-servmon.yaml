@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: compactor
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
+  name: prometheus-mimir-compactor
+  namespace: prometheus
+spec:
+  endpoints:
+    - port: http-metrics
+      relabelings:
+        - action: replace
+          replacement: prometheus/compactor
+          sourceLabels:
+            - job
+          targetLabel: job
+        - action: replace
+          replacement: prometheus
+          targetLabel: cluster
+      scheme: http
+  namespaceSelector:
+    matchNames:
+      - prometheus
+  selector:
+    matchExpressions:
+      - key: prometheus.io/service-monitor
+        operator: NotIn
+        values:
+          - 'false'
+    matchLabels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/name: mimir

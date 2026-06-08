@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 3.0.4
+    helm.sh/chart: mimir-distributed-6.0.6
+  name: prometheus-mimir-store-gateway
+  namespace: prometheus
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: store-gateway
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/name: mimir
+  serviceName: prometheus-mimir-store-gateway-headless
+  template:
+    metadata:
+      annotations:
+        bucketSecretVersion: '0'
+        checksum/config: 0271667882cd52416c90e59d8d293e2e8279dcc53a55cd3ddf67ab1a51440f58
+      labels:
+        app.kubernetes.io/component: store-gateway
+        app.kubernetes.io/instance: prometheus
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: mimir
+        app.kubernetes.io/part-of: memberlist
+        app.kubernetes.io/version: 3.0.4
+        helm.sh/chart: mimir-distributed-6.0.6
+      namespace: prometheus
+    spec:
+      containers:
+        - args:
+            - -target=store-gateway
+            - -config.expand-env=true
+            - -config.file=/etc/mimir/mimir.yaml
+            - -server.grpc-max-send-msg-size-bytes=209715200
+          env:
+            - name: GOMAXPROCS
+              value: '5'
+            - name: GOMEMLIMIT
+              value: '805306368'
+          envFrom:
+            - secretRef:
+                name: prometheus-bucket-secret
+          image: docker.io/grafana/mimir:3.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe: null
+          name: store-gateway
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              memory: 2.1Gi
+            requests:
+              cpu: 500m
+              memory: 768Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/mimir
+              name: config
+            - mountPath: /var/mimir
+              name: runtime-config
+            - mountPath: /data
+              name: storage
+            - mountPath: /active-query-tracker
+              name: active-queries
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: prometheus-mimir
+      terminationGracePeriodSeconds: 120
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: store-gateway
+              app.kubernetes.io/instance: prometheus
+              app.kubernetes.io/name: mimir
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - configMap:
+            items:
+              - key: mimir.yaml
+                path: mimir.yaml
+            name: prometheus-mimir-config
+          name: config
+        - configMap:
+            name: prometheus-mimir-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: active-queries
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 30Gi

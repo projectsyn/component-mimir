@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: mimir-custom
+    monitoring.syn.tools/enabled: 'true'
+    name: mimir-custom
+  name: mimir-custom
+  namespace: prometheus
+spec:
+  groups:
+    - name: mimir-custom.rules
+      rules:
+        - alert: MimirTestAlert
+          annotations:
+            summary: Test alert
+          expr: vector(1) == 0
+          for: 5m
+          labels:
+            severity: warning

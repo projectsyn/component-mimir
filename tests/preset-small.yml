@@ -1,4 +1,7 @@
 # Overwrite parameters here
+applications:
+  - openshift4-monitoring
+
 parameters:
   kapitan:
     dependencies:
