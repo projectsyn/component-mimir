@@ -1,6 +1,7 @@
 # Overwrite parameters here
 applications:
   - rollout-operator
+  - openshift4-monitoring
 
 parameters:
   kapitan:

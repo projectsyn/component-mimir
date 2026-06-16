@@ -38,6 +38,7 @@ jobs:
           - extra-config
           - preset-small
           - preset-large
+          - prometheus
     defaults:
       run:
         working-directory: ${{ env.COMPONENT_NAME }}
@@ -58,6 +59,7 @@ jobs:
           - extra-config
           - preset-small
           - preset-large
+          - prometheus
     defaults:
       run:
         working-directory: ${{ env.COMPONENT_NAME }}
