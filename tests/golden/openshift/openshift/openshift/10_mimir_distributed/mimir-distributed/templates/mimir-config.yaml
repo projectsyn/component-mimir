@@ -74,7 +74,7 @@ data:
         backend: memcached
         memcached:
           addresses: dnssrvnoa+openshift-mimir-results-cache.openshift.svc.cluster.local.:11211
-          max_item_size: 5242880
+          max_item_size: 26214400
           timeout: 500ms
       scheduler_address: openshift-mimir-query-scheduler-headless.openshift.svc:9095
     frontend_worker:
@@ -151,7 +151,7 @@ metadata:
     app.kubernetes.io/instance: openshift
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: openshift-mimir-config
   namespace: openshift

@@ -7,11 +7,12 @@ metadata:
     app.kubernetes.io/instance: legacy
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: legacy-mimir-chunks-cache
   namespace: legacy
 spec:
+  minReadySeconds: 60
   podManagementPolicy: Parallel
   replicas: 2
   selector:
@@ -29,8 +30,8 @@ spec:
         app.kubernetes.io/instance: legacy
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.0.4
-        helm.sh/chart: mimir-distributed-6.0.6
+        app.kubernetes.io/version: 3.1.2
+        helm.sh/chart: mimir-distributed-6.1.0
     spec:
       containers:
         - args:

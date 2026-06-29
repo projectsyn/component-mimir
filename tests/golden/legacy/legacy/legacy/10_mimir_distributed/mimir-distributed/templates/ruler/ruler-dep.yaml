@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: legacy-mimir-ruler
   namespace: legacy
 spec:
@@ -28,15 +28,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: fbf61c326af47229033286256cb9009c5c78cfc9cef5e65ccb3edc089e7af2c2
+        checksum/config: 2bc7cbd3258e6ce1c18f6221c9593eb00eff1b0eab0dc2a81c3afd55951537e8
       labels:
         app.kubernetes.io/component: ruler
         app.kubernetes.io/instance: legacy
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.0.4
-        helm.sh/chart: mimir-distributed-6.0.6
+        app.kubernetes.io/version: 3.1.2
+        helm.sh/chart: mimir-distributed-6.1.0
       namespace: legacy
     spec:
       containers:
@@ -44,12 +44,13 @@ spec:
             - -target=ruler
             - -config.expand-env=true
             - -config.file=/etc/mimir/mimir.yaml
+            - -mem-ballast-size-bytes=1073741824
             - -distributor.remote-timeout=10s
           env: []
           envFrom:
             - secretRef:
                 name: legacy-bucket-secret
-          image: docker.io/grafana/mimir:3.0.4
+          image: docker.io/grafana/mimir:3.1.2
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ruler

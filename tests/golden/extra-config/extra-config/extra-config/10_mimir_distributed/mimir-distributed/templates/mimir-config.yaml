@@ -87,7 +87,7 @@ data:
         backend: memcached
         memcached:
           addresses: dnssrvnoa+extra-config-mimir-results-cache.extra-config.svc.cluster.local.:11211
-          max_item_size: 5242880
+          max_item_size: 26214400
           timeout: 500ms
       scheduler_address: extra-config-mimir-query-scheduler-headless.extra-config.svc:9095
     frontend_worker:
@@ -172,7 +172,7 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: extra-config-mimir-config
   namespace: extra-config
