@@ -7,11 +7,12 @@ metadata:
     app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: defaults-mimir-results-cache
   namespace: defaults
 spec:
+  minReadySeconds: 60
   podManagementPolicy: Parallel
   replicas: 2
   selector:
@@ -29,14 +30,14 @@ spec:
         app.kubernetes.io/instance: defaults
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.0.4
-        helm.sh/chart: mimir-distributed-6.0.6
+        app.kubernetes.io/version: 3.1.2
+        helm.sh/chart: mimir-distributed-6.1.0
     spec:
       containers:
         - args:
             - -m 512
             - --extended=modern
-            - -I 5m
+            - -I 25m
             - -c 16384
             - -v
             - -u 11211

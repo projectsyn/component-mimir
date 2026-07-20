@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.0.4
-    helm.sh/chart: mimir-distributed-6.0.6
+    app.kubernetes.io/version: 3.1.2
+    helm.sh/chart: mimir-distributed-6.1.0
   name: prometheus-mimir-compactor
   namespace: prometheus
 spec:
@@ -25,15 +25,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 0271667882cd52416c90e59d8d293e2e8279dcc53a55cd3ddf67ab1a51440f58
+        checksum/config: 6d68263bc6c048b4fbacba86a3ae3e753457ce498c1811fd0aa29b5c2268b0ff
       labels:
         app.kubernetes.io/component: compactor
         app.kubernetes.io/instance: prometheus
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.0.4
-        helm.sh/chart: mimir-distributed-6.0.6
+        app.kubernetes.io/version: 3.1.2
+        helm.sh/chart: mimir-distributed-6.1.0
       namespace: prometheus
     spec:
       containers:
@@ -45,7 +45,7 @@ spec:
           envFrom:
             - secretRef:
                 name: prometheus-bucket-secret
-          image: docker.io/grafana/mimir:3.0.4
+          image: docker.io/grafana/mimir:3.1.2
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: compactor
