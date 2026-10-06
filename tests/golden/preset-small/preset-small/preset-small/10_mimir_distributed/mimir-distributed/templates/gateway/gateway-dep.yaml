@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: preset-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.2.1
+    helm.sh/chart: mimir-distributed-6.2.1
   name: preset-small-mimir-gateway
   namespace: preset-small
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 3c15a8db2c5ef6d5ffbdc3aa092d547c7a43ce1cdac792369a7d1be559ced767
+        checksum/config: 5b55f2595603557437e8653309b8058084578db0a8ba8d27f33160f8507bb9fa
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: preset-small
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.2.1
+        helm.sh/chart: mimir-distributed-6.2.1
       namespace: preset-small
     spec:
       containers:

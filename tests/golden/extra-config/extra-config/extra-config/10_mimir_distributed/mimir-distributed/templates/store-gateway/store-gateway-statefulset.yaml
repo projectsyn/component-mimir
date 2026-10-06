@@ -11,10 +11,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.2.1
     grafana.com/min-time-between-zones-downscale: 30m
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.2.1
     name: store-gateway-zone-a
     rollout-group: store-gateway
     zone: zone-a
@@ -35,15 +35,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: acc05e12147fa1e916e738d0a2c430e53eb5d5b6242b3849062ed999c4039191
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.2.1
+        helm.sh/chart: mimir-distributed-6.2.1
         name: store-gateway-zone-a
         rollout-group: store-gateway
         zone: zone-a
@@ -176,10 +176,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.2.1
     grafana.com/min-time-between-zones-downscale: 30m
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.2.1
     name: store-gateway-zone-b
     rollout-group: store-gateway
     zone: zone-b
@@ -200,15 +200,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: acc05e12147fa1e916e738d0a2c430e53eb5d5b6242b3849062ed999c4039191
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.2.1
+        helm.sh/chart: mimir-distributed-6.2.1
         name: store-gateway-zone-b
         rollout-group: store-gateway
         zone: zone-b
@@ -341,10 +341,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.2.1
     grafana.com/min-time-between-zones-downscale: 30m
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.2.1
     name: store-gateway-zone-c
     rollout-group: store-gateway
     zone: zone-c
@@ -365,15 +365,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: acc05e12147fa1e916e738d0a2c430e53eb5d5b6242b3849062ed999c4039191
       labels:
         app.kubernetes.io/component: store-gateway
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.2.1
+        helm.sh/chart: mimir-distributed-6.2.1
         name: store-gateway-zone-c
         rollout-group: store-gateway
         zone: zone-c

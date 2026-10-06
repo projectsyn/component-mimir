@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.2.1
+    helm.sh/chart: mimir-distributed-6.2.1
   name: preset-small-mimir-distributor
   namespace: preset-small
 spec:
@@ -28,15 +28,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 5e38be79f723645ad0cd147102feeaca6df4a164718638372f97818fad4b9585
+        checksum/config: c79993cbef08bf3597d80fbc041efcb9b9b2f30e89888c69a8e54ad229ef6f28
       labels:
         app.kubernetes.io/component: distributor
         app.kubernetes.io/instance: preset-small
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.2.1
+        helm.sh/chart: mimir-distributed-6.2.1
       namespace: preset-small
     spec:
       containers:
@@ -54,7 +54,7 @@ spec:
           envFrom:
             - secretRef:
                 name: preset-small-bucket-secret
-          image: docker.io/grafana/mimir:3.1.2
+          image: docker.io/grafana/mimir:3.2.1
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: distributor
