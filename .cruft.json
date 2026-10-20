@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/projectsyn/commodore-component-template.git",
-  "commit": "e808c6d27cffec1429ced096076cf10a69ee35af",
+  "commit": "e181d48cf389cc0db56825e47044d881c8e91e4d",
   "checkout": "main",
   "context": {
     "cookiecutter": {
@@ -25,7 +25,7 @@
       "github_name": "component-mimir",
       "github_url": "https://github.com/projectsyn/component-mimir",
       "_template": "https://github.com/projectsyn/commodore-component-template.git",
-      "_commit": "e808c6d27cffec1429ced096076cf10a69ee35af"
+      "_commit": "e181d48cf389cc0db56825e47044d881c8e91e4d"
     }
   },
   "directory": null
