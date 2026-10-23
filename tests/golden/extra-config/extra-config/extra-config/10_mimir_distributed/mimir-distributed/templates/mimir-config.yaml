@@ -128,7 +128,7 @@ data:
       join_members:
       - dns+extra-config-mimir-gossip-ring.extra-config.svc.cluster.local.:7946
     querier:
-      max_concurrent: 16
+      max_concurrent: 8
     query_scheduler:
       max_outstanding_requests_per_tenant: 800
     ruler:
@@ -172,7 +172,7 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.2.1
+    helm.sh/chart: mimir-distributed-6.2.1
   name: extra-config-mimir-config
   namespace: extra-config
