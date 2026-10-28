@@ -11,10 +11,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.8
+    app.kubernetes.io/version: 3.2.3
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.1
+    helm.sh/chart: mimir-distributed-6.2.2
     name: ingester-zone-a
     rollout-group: ingester
     zone: zone-a
@@ -35,15 +35,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 77e796164b862ab223d25ea7539b947b17411511aa3f7355537f9dbe214138ec
+        checksum/config: 235ea3aec582fe6fe24cc5581d9248af4c8d588e6243d1913d7ec85cc598c7d3
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
         name: ingester-zone-a
         rollout-group: ingester
         zone: zone-a
@@ -76,7 +76,7 @@ spec:
           envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/grafana/mimir:3.1.8
+          image: docker.io/grafana/mimir:3.2.3
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -171,10 +171,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.8
+    app.kubernetes.io/version: 3.2.3
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.1
+    helm.sh/chart: mimir-distributed-6.2.2
     name: ingester-zone-b
     rollout-group: ingester
     zone: zone-b
@@ -195,15 +195,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 77e796164b862ab223d25ea7539b947b17411511aa3f7355537f9dbe214138ec
+        checksum/config: 235ea3aec582fe6fe24cc5581d9248af4c8d588e6243d1913d7ec85cc598c7d3
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
         name: ingester-zone-b
         rollout-group: ingester
         zone: zone-b
@@ -236,7 +236,7 @@ spec:
           envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/grafana/mimir:3.1.8
+          image: docker.io/grafana/mimir:3.2.3
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester
@@ -331,10 +331,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.8
+    app.kubernetes.io/version: 3.2.3
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.1
+    helm.sh/chart: mimir-distributed-6.2.2
     name: ingester-zone-c
     rollout-group: ingester
     zone: zone-c
@@ -355,15 +355,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 77e796164b862ab223d25ea7539b947b17411511aa3f7355537f9dbe214138ec
+        checksum/config: 235ea3aec582fe6fe24cc5581d9248af4c8d588e6243d1913d7ec85cc598c7d3
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
         name: ingester-zone-c
         rollout-group: ingester
         zone: zone-c
@@ -396,7 +396,7 @@ spec:
           envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/grafana/mimir:3.1.8
+          image: docker.io/grafana/mimir:3.2.3
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: ingester

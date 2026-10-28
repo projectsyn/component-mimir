@@ -110,7 +110,7 @@ data:
       join_members:
       - dns+legacy-mimir-gossip-ring.legacy.svc.cluster.local.:7946
     querier:
-      max_concurrent: 16
+      max_concurrent: 8
     query_scheduler:
       max_outstanding_requests_per_tenant: 800
     ruler:
@@ -147,7 +147,7 @@ metadata:
     app.kubernetes.io/instance: legacy
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: legacy-mimir-config
   namespace: legacy

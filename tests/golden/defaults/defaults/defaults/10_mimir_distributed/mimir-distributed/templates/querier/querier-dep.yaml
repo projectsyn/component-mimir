@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: defaults-mimir-querier
   namespace: defaults
 spec:
@@ -28,15 +28,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 6d7bebae12e5c1f161a6f5d06e637b6a15f31bbf4973e3fa269273fc2b8ae632
+        checksum/config: d725d864ba5b4ed3299d7ad9d2e54b8e3e268b5da4cde3025f84bc7cff6e6b73
       labels:
         app.kubernetes.io/component: querier
         app.kubernetes.io/instance: defaults
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
     spec:
       containers:
         - args:
@@ -50,7 +50,7 @@ spec:
           envFrom:
             - secretRef:
                 name: defaults-bucket-secret
-          image: docker.io/grafana/mimir:3.1.8
+          image: docker.io/grafana/mimir:3.2.3
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: querier

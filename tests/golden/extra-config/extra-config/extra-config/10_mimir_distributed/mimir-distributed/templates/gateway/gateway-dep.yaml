@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: extra-config-mimir-gateway
   namespace: extra-config
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 78d85beecc26dc013ee874a1794ecb87b0d1b8a57ae2d74a0086df641bfae173
+        checksum/config: dab51b12bc556a3fc7f247316128960dd55d76085d7263cfd66242b85e86e9c3
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
       namespace: extra-config
     spec:
       containers:
