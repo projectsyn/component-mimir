@@ -6,9 +6,9 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.1.8
     custom-label: my-label
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.1.1
   name: extra-config-mimir-gateway
   namespace: extra-config
 spec:

@@ -11,10 +11,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.1.8
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.1.1
     name: ingester-zone-a
     rollout-group: ingester
     zone: zone-a
@@ -35,15 +35,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: 20386c3404815f429c8585f60402f08cc64924d764fee14831ba44ce0e3cf422
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
         name: ingester-zone-a
         rollout-group: ingester
         zone: zone-a
@@ -175,10 +175,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.1.8
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.1.1
     name: ingester-zone-b
     rollout-group: ingester
     zone: zone-b
@@ -199,15 +199,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: 20386c3404815f429c8585f60402f08cc64924d764fee14831ba44ce0e3cf422
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
         name: ingester-zone-b
         rollout-group: ingester
         zone: zone-b
@@ -339,10 +339,10 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
+    app.kubernetes.io/version: 3.1.8
     grafana.com/min-time-between-zones-downscale: 12h
     grafana.com/prepare-downscale: 'true'
-    helm.sh/chart: mimir-distributed-6.1.0
+    helm.sh/chart: mimir-distributed-6.1.1
     name: ingester-zone-c
     rollout-group: ingester
     zone: zone-c
@@ -363,15 +363,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 8da360a96e662b0c6830768a2ec72439e042e4860601a22486a8726a72a5e465
+        checksum/config: 20386c3404815f429c8585f60402f08cc64924d764fee14831ba44ce0e3cf422
       labels:
         app.kubernetes.io/component: ingester
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
         name: ingester-zone-c
         rollout-group: ingester
         zone: zone-c

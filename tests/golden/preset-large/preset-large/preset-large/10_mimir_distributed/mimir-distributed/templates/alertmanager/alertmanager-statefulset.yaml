@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.1.8
+    helm.sh/chart: mimir-distributed-6.1.1
   name: preset-large-mimir-alertmanager
   namespace: preset-large
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: 6094c95116d328ab5be7df061ecb1a9a678075a09f5d015248ec97be2a5ac1e9
-        checksum/config: fbf423e86688b73224014d146bd829d592740d3bffbb6701777751cd3e5bd052
+        checksum/alertmanager-fallback-config: 7c4de40a456714f094b76918fc16340a7b4c4d435709a48dc18c2513af0acfc0
+        checksum/config: c11382e0977b2518bec6a860db5ba86ac807ba198bff0cadad3f7a023aada788
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: preset-large
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
       namespace: preset-large
     spec:
       containers:
@@ -46,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: preset-large-bucket-secret
-          image: docker.io/grafana/mimir:3.1.2
+          image: docker.io/grafana/mimir:3.1.8
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
