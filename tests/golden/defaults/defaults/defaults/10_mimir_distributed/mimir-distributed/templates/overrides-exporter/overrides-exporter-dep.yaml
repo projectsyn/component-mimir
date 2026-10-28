@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.1.8
+    helm.sh/chart: mimir-distributed-6.1.1
   name: defaults-mimir-overrides-exporter
   namespace: defaults
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 4790cb65c01827e49ada5e9dc13a3c29b9929fd7bb8ab96508c920262685df2c
+        checksum/config: 6d7bebae12e5c1f161a6f5d06e637b6a15f31bbf4973e3fa269273fc2b8ae632
       labels:
         app.kubernetes.io/component: overrides-exporter
         app.kubernetes.io/instance: defaults
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
       namespace: defaults
     spec:
       containers:
@@ -46,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: defaults-bucket-secret
-          image: docker.io/grafana/mimir:3.1.2
+          image: docker.io/grafana/mimir:3.1.8
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:

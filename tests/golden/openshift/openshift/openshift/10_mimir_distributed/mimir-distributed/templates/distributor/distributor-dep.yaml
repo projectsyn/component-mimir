@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.1.8
+    helm.sh/chart: mimir-distributed-6.1.1
   name: openshift-mimir-distributor
   namespace: openshift
 spec:
@@ -28,15 +28,15 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 5dca760b175542e278dd78c9c6fdcb94dc1cb6e998022d2ec7d9916eaa7d6f8c
+        checksum/config: 77e796164b862ab223d25ea7539b947b17411511aa3f7355537f9dbe214138ec
       labels:
         app.kubernetes.io/component: distributor
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
       namespace: openshift
     spec:
       containers:
@@ -54,7 +54,7 @@ spec:
           envFrom:
             - secretRef:
                 name: openshift-bucket-secret
-          image: docker.io/grafana/mimir:3.1.2
+          image: docker.io/grafana/mimir:3.1.8
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: distributor

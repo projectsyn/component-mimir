@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.2
-    helm.sh/chart: mimir-distributed-6.1.0
+    app.kubernetes.io/version: 3.1.8
+    helm.sh/chart: mimir-distributed-6.1.1
   name: prometheus-mimir-alertmanager
   namespace: prometheus
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: c4565f3f843bd8f6d9b9c9c0fee6566b455809cb2f8e11c5040c61dd270c9bb1
-        checksum/config: 6d68263bc6c048b4fbacba86a3ae3e753457ce498c1811fd0aa29b5c2268b0ff
+        checksum/alertmanager-fallback-config: 613ad71f1b44807d81fe819836cb4b7dac81e2d8991f18f9fee60e48e44a8cfb
+        checksum/config: 1faf3243b004a5dff922e5845d958d371bbc88fa899babbb767ad328b998ec3a
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: prometheus
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.2
-        helm.sh/chart: mimir-distributed-6.1.0
+        app.kubernetes.io/version: 3.1.8
+        helm.sh/chart: mimir-distributed-6.1.1
       namespace: prometheus
     spec:
       containers:
@@ -46,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: prometheus-bucket-secret
-          image: docker.io/grafana/mimir:3.1.2
+          image: docker.io/grafana/mimir:3.1.8
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: alertmanager
