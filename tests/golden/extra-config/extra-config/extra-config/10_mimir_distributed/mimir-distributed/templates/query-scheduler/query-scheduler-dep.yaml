@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: extra-config
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: extra-config-mimir-query-scheduler
   namespace: extra-config
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 20386c3404815f429c8585f60402f08cc64924d764fee14831ba44ce0e3cf422
+        checksum/config: f46ddefdaa1110e47560245532721e4c6072da7eae0d5606aa92bef50cc93c5f
       labels:
         app.kubernetes.io/component: query-scheduler
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
     spec:
       containers:
         - args:

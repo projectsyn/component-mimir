@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: prometheus
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: prometheus-mimir-gateway
   namespace: prometheus
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 73386f436745af40a3fdda1134845370dec02743e6a0c8c1823fbb16fbacd1b8
+        checksum/config: 33781b4553dc44fc6c369922ab801ea93f105a0cc05f6b30f7239060894c6af0
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: prometheus
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
       namespace: prometheus
     spec:
       containers:

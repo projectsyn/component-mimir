@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: memberlist
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: extra-config-mimir-alertmanager
   namespace: extra-config
 spec:
@@ -24,16 +24,16 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/alertmanager-fallback-config: 008b26d552d23635a381977365c690a57d4d37b14d7a51cbdab9daad94bc9285
-        checksum/config: 20386c3404815f429c8585f60402f08cc64924d764fee14831ba44ce0e3cf422
+        checksum/alertmanager-fallback-config: b136d5f515969abbedfe3a1499956f46725f35f3d26c75b01856b959fc1d89c3
+        checksum/config: f46ddefdaa1110e47560245532721e4c6072da7eae0d5606aa92bef50cc93c5f
       labels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: extra-config
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
         app.kubernetes.io/part-of: memberlist
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
       namespace: extra-config
     spec:
       containers:

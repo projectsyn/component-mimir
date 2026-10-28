@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: openshift
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 3.1.8
-    helm.sh/chart: mimir-distributed-6.1.1
+    app.kubernetes.io/version: 3.2.3
+    helm.sh/chart: mimir-distributed-6.2.2
   name: openshift-mimir-gateway
   namespace: openshift
 spec:
@@ -27,14 +27,14 @@ spec:
     metadata:
       annotations:
         bucketSecretVersion: '0'
-        checksum/config: 2196b12fb97a1a3d0d7492ca9ece33d266c1f02956b2e884c4eb5581f6c2fdad
+        checksum/config: 92edef1999743ab992634b3c178bfa8a48bd86437519bac8e9970aec0e950e2f
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: openshift
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 3.1.8
-        helm.sh/chart: mimir-distributed-6.1.1
+        app.kubernetes.io/version: 3.2.3
+        helm.sh/chart: mimir-distributed-6.2.2
       namespace: openshift
     spec:
       containers:
